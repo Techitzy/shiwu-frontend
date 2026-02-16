@@ -1,33 +1,43 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from 'react-native';
+import CustomHeader from '../../components/shared/CustomHeader';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarActiveTintColor: isDarkMode ? '#fff' : '#7373FF',
+        tabBarStyle: {
+          backgroundColor: isDarkMode ? '#000' : '#fff',
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          header: () => <CustomHeader />,
+          tabBarIcon: ({ color }) => <Ionicons name="home-outline" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="create"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Create',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <Ionicons name="add-circle-outline" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={24} color={color} />,
         }}
       />
     </Tabs>

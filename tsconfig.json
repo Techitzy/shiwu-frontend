@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "app/search/index.tsx", "app/_layout.tsx", "app/(tabs)/profile/settings.tsx", "app/(tabs)/_layout.tsx", "app/(tabs)/create.tsx", "app/(tabs)/index.tsx", "app/event/approve-request/[id].tsx", "app/event/edit/[id].tsx", "app/event/[id].tsx", "app/location/select.tsx", "app/notification/index.tsx", "app/search/filter.tsx", "app/(tabs)/profile/see-more.tsx", "app/(tabs)/profile/index.tsx", "app/(tabs)/profile/edit.tsx", "app/(tabs)/profile/edit-personal-info.tsx", "app/(auth)/walkthrough.tsx", "app/(auth)/verifying.tsx", "app/(auth)/verify-email.tsx", "app/(auth)/signup.tsx", "app/(auth)/set-password.tsx", "app/(auth)/role-selection.tsx", "app/(auth)/register.tsx", "app/(auth)/login.tsx", "app/(auth)/email-sent.tsx", "app/(auth)/forgot-password.tsx", "app/(auth)/_layout.tsx"  ]
 }
