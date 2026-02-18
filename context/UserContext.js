@@ -1,9 +1,8 @@
-import React, {createContext, useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import UserService from '../services/UserService';
-import {Text, View, ActivityIndicator} from 'react-native';
 import axios from 'axios';
-import Geolocation from '@react-native-community/geolocation';
+import * as Location from 'expo-location';
+import React, { createContext, useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
 export const UserContext = createContext();
 
@@ -33,31 +32,37 @@ export const UserProvider = ({children}) => {
         }
 
         if (!JSON.parse(savedUser).location) {
-          Geolocation.getCurrentPosition(
-            async position => {
-              const {latitude, longitude} = position.coords;
-              const response = await axios.get(
-                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDEp4eMaWFDi6psYCa4NSc3NONttlxD3Xo`,
-              );
-              const address = response.data.results[0];
-              const city = address.address_components.find(comp =>
-                comp.types.includes('locality'),
-              ).long_name;
+          try {
+            const {status} = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+              console.error('Location permission denied');
+              return;
+            }
 
-              if (latestUserData) {
-                const updatedUser = {...latestUserData, location: city};
-                setUser(updatedUser);
-                await AsyncStorage.setItem(
-                  'userDetails',
-                  JSON.stringify(updatedUser),
-                );
-              }
-            },
-            error => {
-              console.error('Location fetching error:', error);
-            },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-          );
+            const position = await Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.High,
+            });
+
+            const {latitude, longitude} = position.coords;
+            const response = await axios.get(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDEp4eMaWFDi6psYCa4NSc3NONttlxD3Xo`,
+            );
+            const address = response.data.results[0];
+            const city = address.address_components.find(comp =>
+              comp.types.includes('locality'),
+            ).long_name;
+
+            if (latestUserData) {
+              const updatedUser = {...latestUserData, location: city};
+              setUser(updatedUser);
+              await AsyncStorage.setItem(
+                'userDetails',
+                JSON.stringify(updatedUser),
+              );
+            }
+          } catch (error) {
+            console.error('Location fetching error:', error);
+          }
         }
       } catch (error) {
         console.error('Error loading or updating user data:', error.message);

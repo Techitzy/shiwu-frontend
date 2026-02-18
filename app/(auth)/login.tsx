@@ -1,23 +1,23 @@
-import React, {useState, useContext} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Animated,
+  Image,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  View,
   useColorScheme,
-  Image,
-  ActivityIndicator,
-  Animated,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 
-import {UserContext} from '../../context/UserContext';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
+import { UserContext } from '../../context/UserContext';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const LoginScreen = () => {
-  const {login, isEmailExist} = useContext(UserContext);
+  const { login, isEmailExist } = useContext(UserContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [step, setStep] = useState('email');
@@ -94,9 +94,9 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: backgroundColor}]}>
-      <Text style={[styles.title, {color: textColor}]}>Yo, Welcome Back!</Text>
-      <Text style={[styles.subtitle, {color: textColor}]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
+      <Text style={[styles.title, { color: textColor }]}>Yo, Welcome Back!</Text>
+      <Text style={[styles.subtitle, { color: textColor }]}>
         {step === 'email'
           ? 'Enter your email to continue'
           : 'Enter your password to sign in'}
@@ -121,7 +121,7 @@ const LoginScreen = () => {
         autoCapitalize="none"
       />
 
-      <Animated.View style={{opacity, width: '100%'}}>
+      <Animated.View style={{ opacity, width: '100%' }}>
         {step === 'password' && (
           <View>
             <TextInput
@@ -178,7 +178,7 @@ const LoginScreen = () => {
 
       <View style={styles.dividerContainer}>
         <View style={styles.divider} />
-        <Text style={[styles.orText, {color: textColor}]}>OR</Text>
+        <Text style={[styles.orText, { color: textColor }]}>OR</Text>
         <View style={styles.divider} />
       </View>
 
@@ -192,7 +192,7 @@ const LoginScreen = () => {
         </View>
       </TouchableOpacity>
 
-      <Text style={[styles.agreementText, {color: informationText}]}>
+      <Text style={[styles.agreementText, { color: informationText }]}>
         By continuing, you agree to our{' '}
         <Text style={styles.linkText}>Terms of Service</Text> and{' '}
         <Text style={styles.linkText}>Privacy Policy</Text>.

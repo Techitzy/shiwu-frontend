@@ -1,19 +1,18 @@
-import Geolocation from '@react-native-community/geolocation';
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  TextInput,
-  View,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import {darkColors, lightColors, primaryColor} from '../../themes/basics';
+import * as Location from 'expo-location';
+import React, { useState } from 'react';
+import {
+    ActivityIndicator,
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const CustomPlacesAutocomplete = ({
   isDarkTheme,
@@ -85,63 +84,57 @@ const CustomPlacesAutocomplete = ({
   };
 
   const requestLocationPermission = async () => {
-    let result = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-    if (result === RESULTS.GRANTED) {
-      getCurrentLocation();
-    } else {
-      result = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-      if (result === RESULTS.GRANTED) {
+    try {
+      const {status} = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted') {
         getCurrentLocation();
       } else {
         console.log('Location permission denied');
         if (setErrors) setErrors({...errors, address: 'Location permission denied'});
       }
+    } catch (error) {
+      console.error('Error requesting location permission:', error);
+      if (setErrors) setErrors({...errors, address: 'Failed to request location permission'});
     }
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = async () => {
     setIsLoading(true);
-    Geolocation.getCurrentPosition(
-      position => {
-        const {latitude, longitude} = position.coords;
-        fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDEp4eMaWFDi6psYCa4NSc3NONttlxD3Xo`,
-        )
-          .then(response => response.json())
-          .then(data => {
-            setIsLoading(false);
-            if (data.results && data.results.length > 0) {
-              const firstResult = data.results[0];
-              setAddress(firstResult.formatted_address);
-              const addressComponents = firstResult.address_components;
-              const cityComp = addressComponents.find(component =>
-                component.types.includes('locality'),
-              );
-              const areaComp = addressComponents.find(
-                component =>
-                  component.types.includes('sublocality_level_1') ||
-                  component.types.includes('sublocality'),
-              );
-              if (setCity && cityComp) setCity(cityComp.long_name);
-              if (setArea && areaComp) setArea(areaComp.long_name);
-            } else {
-              console.log('No address found');
-              if (setErrors) setErrors({...errors, address: 'No address found'});
-            }
-          })
-          .catch(error => {
-            console.error(error);
-            setIsLoading(false);
-            if (setErrors) setErrors({...errors, address: 'Failed to fetch address'});
-          });
-      },
-      error => {
-        setIsLoading(false);
-        console.error(error);
-        if (setErrors) setErrors({...errors, address: error.message});
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
+    try {
+      const position = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      const {latitude, longitude} = position.coords;
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDEp4eMaWFDi6psYCa4NSc3NONttlxD3Xo`,
+      );
+      const data = await response.json();
+      
+      setIsLoading(false);
+      if (data.results && data.results.length > 0) {
+        const firstResult = data.results[0];
+        setAddress(firstResult.formatted_address);
+        const addressComponents = firstResult.address_components;
+        const cityComp = addressComponents.find(component =>
+          component.types.includes('locality'),
+        );
+        const areaComp = addressComponents.find(
+          component =>
+            component.types.includes('sublocality_level_1') ||
+            component.types.includes('sublocality'),
+        );
+        if (setCity && cityComp) setCity(cityComp.long_name);
+        if (setArea && areaComp) setArea(areaComp.long_name);
+      } else {
+        console.log('No address found');
+        if (setErrors) setErrors({...errors, address: 'No address found'});
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Location error:', error);
+      if (setErrors) setErrors({...errors, address: error.message});
+    }
   };
 
   return (
