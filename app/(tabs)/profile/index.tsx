@@ -104,7 +104,7 @@ const ProfileScreen = () => {
                   below.
                 </Text>
                 <TouchableOpacity
-                  onPress={() => router.push('/(tabs)/')}
+                  onPress={() => router.push('/(tabs)')}
                   style={styles.checkOutButton}>
                   <Text style={styles.checkOutText}>
                     Check out events in your area

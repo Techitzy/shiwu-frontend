@@ -1,9 +1,9 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, useColorScheme} from 'react-native';
-import {lightColors, darkColors} from '../../../themes/basics';
-import SkeletonHostLoader from '../skeletonLoaders/SkeletonHostLoader';
+import { Image, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { darkColors, lightColors } from '../../../themes/basics';
+// import SkeletonHostLoader from '../skeletonLoaders/SkeletonHostLoader';
 
-const HostDetails = ({host, loading}) => {
+const HostDetails = ({ host, loading }) => {
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
   const backgroundColor = isDarkTheme
@@ -25,17 +25,18 @@ const HostDetails = ({host, loading}) => {
           shadowColor: '#888',
         },
       ]}>
-      <Text style={[styles.header, {color: textColor}]}>About the Host</Text>
+      <Text style={[styles.header, { color: textColor }]}>About the Host</Text>
       {loading ? (
-        <SkeletonHostLoader theme={colorScheme} />
+        // <SkeletonHostLoader theme={colorScheme} />
+        <></>
       ) : (
         <View style={styles.hostContent}>
-          <Image source={{uri: host.profile_pic}} style={styles.avatar} />
+          <Image source={{ uri: host.profile_pic }} style={styles.avatar} />
           <View style={styles.hostInfo}>
-            <Text style={[styles.hostName, {color: textColor}]}>
+            <Text style={[styles.hostName, { color: textColor }]}>
               {host.full_name}
             </Text>
-            <Text style={[styles.hostBio, {color: informationText}]}>
+            <Text style={[styles.hostBio, { color: informationText }]}>
               {host.bio}
             </Text>
           </View>
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowOpacity: 0.3,
     shadowRadius: 6,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     marginHorizontal: 10,
   },
   header: {

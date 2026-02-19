@@ -32,7 +32,7 @@ import {EventContext} from '../../context/EventContext';
 import DiscardChangesModal from '../../components/shared/modals/DiscardChangesModal';
 import CustomPlacesAutocomplete from '../../components/shared/CustomPlacesAutocomplete';
 import {primaryColor} from '../../themes/basics';
-import SkeletonCategoryLoader from '../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
+// import SkeletonCategoryLoader from '../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
 
 const getNextClosest30Minutes = () => {
   const now = new Date();
@@ -552,7 +552,8 @@ const CreateEventScreen = () => {
                 </TouchableOpacity>
               ))
             ) : loading ? (
-              <SkeletonCategoryLoader theme={colorScheme} />
+              // <SkeletonCategoryLoader theme={colorScheme} />
+              <></>
             ) : (
               categories.slice(0, 10).map(cat => (
                 <TouchableOpacity

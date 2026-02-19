@@ -67,7 +67,8 @@ const LoginScreen = () => {
     } else if (step === 'password') {
       setIsLoading(true);
       try {
-        await login(email, password);
+        const value = await login(email, password);
+        value && router.push('/(tabs)');
         // Login success logic handled by UserContext and root _layout.tsx
       } catch (err) {
         setError('Invalid password');

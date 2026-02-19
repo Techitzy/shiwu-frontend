@@ -1,25 +1,23 @@
-import React, {useState, useEffect, useContext} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   ScrollView,
-  View,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
+  View,
   useColorScheme,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 
 import TrendingEvent from '../../components/shared/home/TrendingEvents';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
-import {EventContext} from '../../context/EventContext';
-import {UserContext} from '../../context/UserContext';
-import SkeletonTabLoader from '../../components/shared/skeletonLoaders/SkeletonTabLoader';
-import SkeletonEventLoader from '../../components/shared/skeletonLoaders/SkeletonEventLoader';
+import { EventContext } from '../../context/EventContext';
+import { UserContext } from '../../context/UserContext';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const HomeScreen = () => {
-  const {user} = useContext(UserContext);
-  const {events, eventsLoading, fetchAllEvents, fetchCategories, loading} = useContext(EventContext);
+  const { user } = useContext(UserContext);
+  const { events, eventsLoading, fetchAllEvents, fetchCategories, loading } = useContext(EventContext);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('All');
   const [categories, setCategories] = useState([]);
@@ -34,8 +32,8 @@ const HomeScreen = () => {
       activeTab === 'All'
         ? events
         : events.filter(event =>
-            event.categories?.some(category => category.name === activeTab),
-          );
+          event.categories?.some(category => category.name === activeTab),
+        );
     return filteredByCategory;
   };
 
@@ -61,18 +59,19 @@ const HomeScreen = () => {
     fetchData();
   }, []);
 
-  const tabs = [{id: 'all', label: 'All'}, ...categories.map(c => ({ id: c.id, label: c.name }))];
+  const tabs = [{ id: 'all', label: 'All' }, ...categories.map(c => ({ id: c.id, label: c.name }))];
 
   const dynamicStyles = styles(theme);
 
   return (
     <ScrollView
       style={dynamicStyles.container}
-      contentContainerStyle={{flexGrow: 1}}
+      contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}>
       <View style={dynamicStyles.tabContainer}>
         {loading ? (
-          <SkeletonTabLoader theme={theme} />
+          // <SkeletonTabLoader theme={theme} />
+          <></>
         ) : (
           <ScrollView
             horizontal
@@ -87,7 +86,7 @@ const HomeScreen = () => {
                   <View
                     style={[
                       dynamicStyles.activeTab,
-                      {backgroundColor: primaryColor.main},
+                      { backgroundColor: primaryColor.main },
                     ]}>
                     <Text style={dynamicStyles.activeTabText}>{tab.label}</Text>
                   </View>
@@ -100,10 +99,11 @@ const HomeScreen = () => {
         )}
       </View>
       {eventsLoading ? (
-        <SkeletonEventLoader theme={theme} />
+        // <SkeletonEventLoader theme={theme} />
+        <></>
       ) : getFilteredEvents().length > 0 ? (
         <View style={dynamicStyles.trendingEventsContainer}>
-          <Text style={[dynamicStyles.trendingTitle, {color: textColor}]}>
+          <Text style={[dynamicStyles.trendingTitle, { color: textColor }]}>
             {getFilteredEvents().length} EVENTS IN YOUR AREA
           </Text>
 
@@ -119,15 +119,15 @@ const HomeScreen = () => {
                 <Text
                   style={[
                     dynamicStyles.seeAllEventsText,
-                    {color: primaryColor.main},
+                    { color: primaryColor.main },
                   ]}>
                   See All Events
                 </Text>
-                  <Ionicons
-                    name="arrow-forward"
-                    size={24}
-                    color={primaryColor.main}
-                  />
+                <Ionicons
+                  name="arrow-forward"
+                  size={24}
+                  color={primaryColor.main}
+                />
               </View>
             </TouchableOpacity>
           )}
@@ -235,6 +235,6 @@ const styles = theme =>
       textAlign: 'center',
     },
     horizontalContainer: {
-        paddingRight: 20,
+      paddingRight: 20,
     }
   });

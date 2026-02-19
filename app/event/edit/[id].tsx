@@ -28,7 +28,7 @@ import {EventContext} from '../../../context/EventContext';
 import DiscardChangesModal from '../../../components/shared/modals/DiscardChangesModal';
 import CustomPlacesAutocomplete from '../../../components/shared/CustomPlacesAutocomplete';
 import {primaryColor} from '../../../themes/basics';
-import SkeletonCategoryLoader from '../../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
+// import SkeletonCategoryLoader from '../../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
 import ImageGrid from '../../../components/shared/ImageGrid';
 
 const getNextClosest30Minutes = () => {
