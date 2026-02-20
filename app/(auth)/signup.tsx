@@ -104,7 +104,7 @@ const SignUpScreen = () => {
         // Assuming signUp updates the user context, which triggers the root layout to switch to tabs
         // If not, we might need to manually navigate, but typically Context updates handle this.
         // For safety/redundancy:
-        router.replace('/(tabs)/');
+        router.replace('/(tabs)');
       } else {
         setError('Sign-up failed. Please try again.');
       }

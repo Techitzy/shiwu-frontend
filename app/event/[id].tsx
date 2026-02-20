@@ -33,9 +33,9 @@ import { createOrder } from '../../services/PaymentService';
 import { formatDate, formatTime } from '../../services/utils';
 import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
-// ─── Razorpay config ─────────────────────────────────────────────────────────
 const RAZORPAY_KEY = 'rzp_test_i4HoYQt0NerAqC';
-// ─────────────────────────────────────────────────────────────────────────────
+
+
 
 const EventDetailScreen = () => {
   const { id, event: eventString } = useLocalSearchParams();
@@ -92,7 +92,7 @@ const EventDetailScreen = () => {
     setModalVisible(true);
   };
 
-  // Step 2 — User confirmed ticket count; create Razorpay order and open checkout
+  // Step 2 — User confirmed ticket count; create Razorpay order and open WebView checkout
   const handleContinue = async ({ ticketCount, totalAmount }: { ticketCount: number; totalAmount: number }) => {
     setModalVisible(false);
     setPendingTicketCount(ticketCount);
@@ -111,7 +111,7 @@ const EventDetailScreen = () => {
     }
   };
 
-  // Step 3a — Payment success
+  // Step 3a — Payment success (called by RazorpayWebModal)
   const handlePaymentSuccess = useCallback(async (paymentData: {
     razorpay_payment_id: string;
     razorpay_order_id: string | null;
@@ -139,13 +139,13 @@ const EventDetailScreen = () => {
     }
   }, [event, pendingTicketCount, bookEvent, router]);
 
-  // Step 3b — User dismissed checkout
+  // Step 3b — User dismissed the checkout WebView
   const handlePaymentDismiss = useCallback(() => {
     setRazorpayVisible(false);
     Alert.alert('Payment Cancelled', 'You closed the payment screen.');
   }, []);
 
-  // Step 3c — Payment failed
+  // Step 3c — Payment failed inside WebView
   const handlePaymentError = useCallback((description: string) => {
     setRazorpayVisible(false);
     Alert.alert('Payment Failed', description || 'Something went wrong. Please try again.');
@@ -478,7 +478,7 @@ const EventDetailScreen = () => {
         onContinue={handleContinue}
       />
 
-      {/* Razorpay WebView checkout */}
+      {/* Razorpay WebView checkout — no native SDK needed */}
       <RazorpayWebModal
         isVisible={razorpayVisible}
         amount={paymentAmount}

@@ -28,7 +28,7 @@ const RoleSelectionScreen = () => {
     if (role === 'Host') {
       router.push('/(tabs)/create');
     } else {
-      router.push('/(tabs)/');
+      router.push('/(tabs)');
     }
   };
 
