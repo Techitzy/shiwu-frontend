@@ -13,10 +13,10 @@ import {Avatar} from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-import {UserContext} from '../../../context/UserContext';
-import EventSection from '../../../components/shared/profile/EventSection';
-import {useBusinessContext} from '../../../context/businessContext';
-import {lightColors, darkColors, primaryColor} from '../../../themes/basics';
+import {UserContext} from '../../context/UserContext';
+import EventSection from '../../components/shared/profile/EventSection';
+import {useBusinessContext} from '../../context/businessContext';
+import {lightColors, darkColors, primaryColor} from '../../themes/basics';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -59,7 +59,7 @@ const ProfileScreen = () => {
       {/* Header */}
       <View style={styles.headerContainer}>
         <Text style={[styles.headerTitle, {color: textColor}]}>Profile</Text>
-        <TouchableOpacity onPress={() => router.push('/(tabs)/profile/settings')}>
+        <TouchableOpacity onPress={() => router.push('/profile/settings')}>
           <MaterialIcons name="settings" size={26} color={textColor} />
         </TouchableOpacity>
       </View>
@@ -118,7 +118,7 @@ const ProfileScreen = () => {
                   data={events}
                   onSeeMore={() =>
                     router.push({
-                      pathname: '/(tabs)/profile/see-more',
+                      pathname: '/profile/see-more',
                       params: { title: 'Recent Bookings', events: JSON.stringify(events) }
                     })
                   }
@@ -128,7 +128,7 @@ const ProfileScreen = () => {
                   data={events}
                   onSeeMore={() =>
                     router.push({
-                      pathname: '/(tabs)/profile/see-more',
+                      pathname: '/profile/see-more',
                       params: { title: 'Past Events', events: JSON.stringify(events) }
                     })
                   }
@@ -162,7 +162,7 @@ const ProfileScreen = () => {
                   data={recentEvents}
                   onSeeMore={() =>
                     router.push({
-                      pathname: '/(tabs)/profile/see-more',
+                      pathname: '/profile/see-more',
                       params: { title: 'Upcoming Events', events: JSON.stringify(recentEvents) }
                     })
                   }
@@ -172,7 +172,7 @@ const ProfileScreen = () => {
                   data={pastEvents}
                   onSeeMore={() =>
                     router.push({
-                      pathname: '/(tabs)/profile/see-more',
+                      pathname: '/profile/see-more',
                       params: { title: 'Past Events', events: JSON.stringify(pastEvents) }
                     })
                   }

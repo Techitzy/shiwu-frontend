@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import TrendingEvent from '../../../components/shared/home/TrendingEvents';
-import {lightColors, darkColors} from '../../../themes/basics';
+import TrendingEvent from '../../components/shared/home/TrendingEvents';
+import {lightColors, darkColors} from '../../themes/basics';
 
 const SeeMoreScreen = () => {
   const router = useRouter();

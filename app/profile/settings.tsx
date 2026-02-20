@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import {UserContext} from '../../../context/UserContext';
-import {lightColors, darkColors} from '../../../themes/basics';
+import {UserContext} from '../../context/UserContext';
+import {lightColors, darkColors} from '../../themes/basics';
 
 const SettingsScreen = () => {
   const router = useRouter();
@@ -88,7 +88,7 @@ const SettingsScreen = () => {
         ]}>
         <TouchableOpacity
           style={[styles.row, {borderBottomColor}]}
-          onPress={() => router.push('/(tabs)/profile/edit')}>
+          onPress={() => router.push('/profile/edit')}>
           <Text style={[styles.rowText, {color: textColor}]}>Edit Profile</Text>
           <Ionicons name="chevron-forward" size={24} color={textColor} />
         </TouchableOpacity>

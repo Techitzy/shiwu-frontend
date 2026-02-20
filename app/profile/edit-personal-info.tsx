@@ -1,29 +1,29 @@
-import React, {useContext, useState} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
   ActivityIndicator,
   FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
   useColorScheme,
+  View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import {UserContext} from '../../../context/UserContext';
-import EmailVerificationModal from '../../../components/shared/modals/EmailVerificationModal';
-import PhoneVerificationModal from '../../../components/shared/modals/PhoneVerificationModal';
-import {lightColors, darkColors, primaryColor} from '../../../themes/basics';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import EmailVerificationModal from '../../components/shared/modals/EmailVerificationModal';
+import PhoneVerificationModal from '../../components/shared/modals/PhoneVerificationModal';
+import { UserContext } from '../../context/UserContext';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const EditPersonalInfoScreen = () => {
   const router = useRouter();
   const { label: labelParam } = useLocalSearchParams();
   const label = Array.isArray(labelParam) ? labelParam[0] : labelParam;
 
-  const {user, setUser} = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const [name, setName] = useState(user?.full_name || '');
   const [bio, setBio] = useState(user?.bio || '');
@@ -84,7 +84,7 @@ const EditPersonalInfoScreen = () => {
       setIsLoading(true);
       const response = await axios.patch(
         `https://shivoo-backend.onrender.com/user_auth/users/${user.id}`,
-        {[key]: value},
+        { [key]: value },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -114,13 +114,13 @@ const EditPersonalInfoScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
+    <View style={[styles.container, { backgroundColor }]}>
       {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="close-sharp" size={26} color={textColor} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: textColor}]}>
+        <Text style={[styles.headerTitle, { color: textColor }]}>
           Edit {label}
         </Text>
         <TouchableOpacity
@@ -175,7 +175,7 @@ const EditPersonalInfoScreen = () => {
             maxLength={400}
             multiline
           />
-          <Text style={[styles.charCount, {color: textColor}]}>
+          <Text style={[styles.charCount, { color: textColor }]}>
             {bio.length}/400
           </Text>
         </View>
@@ -185,7 +185,7 @@ const EditPersonalInfoScreen = () => {
         <FlatList
           data={genderOptions}
           keyExtractor={item => item}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.genderListItem}
               onPress={() => setGender(item)}>
@@ -194,7 +194,7 @@ const EditPersonalInfoScreen = () => {
                 size={26}
                 color={gender === item ? primaryColor.main : textColor}
               />
-              <Text style={[styles.genderText, {color: textColor}]}>
+              <Text style={[styles.genderText, { color: textColor }]}>
                 {item}
               </Text>
             </TouchableOpacity>
@@ -291,15 +291,15 @@ const EditPersonalInfoScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16},
+  container: { flex: 1, padding: 16 },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: 16,
   },
-  headerTitle: {fontSize: 18, fontWeight: 'bold', marginLeft: 20},
-  saveIcon: {marginLeft: 'auto'},
+  headerTitle: { fontSize: 18, fontWeight: 'bold', marginLeft: 20 },
+  saveIcon: { marginLeft: 'auto' },
   inputField: {
     borderWidth: 1,
     borderRadius: 8,
@@ -314,13 +314,13 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     marginVertical: 8,
   },
-  charCount: {alignSelf: 'flex-end', marginRight: 8, fontSize: 12},
+  charCount: { alignSelf: 'flex-end', marginRight: 8, fontSize: 12 },
   genderListItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
   },
-  genderText: {fontSize: 16, marginLeft: 10},
+  genderText: { fontSize: 16, marginLeft: 10 },
   emailContainer: {
     marginVertical: 8,
   },

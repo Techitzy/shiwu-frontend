@@ -11,8 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Avatar, ActivityIndicator } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
-import {UserContext} from '../../../context/UserContext';
-import {lightColors, darkColors, primaryColor} from '../../../themes/basics';
+import {UserContext} from '../../context/UserContext';
+import {lightColors, darkColors, primaryColor} from '../../themes/basics';
 // import ContentLoader, {Rect} from 'react-content-loader/native'; // Keep or use ActivityIndicator
 
 const EditProfileScreen = () => {
@@ -118,7 +118,7 @@ const EditProfileScreen = () => {
             ]}
             onPress={() =>
               router.push({
-                  pathname: '/(tabs)/profile/edit-personal-info',
+                  pathname: '/profile/edit-personal-info',
                   params: { label: field.label, value: field.value }
               })
             }>

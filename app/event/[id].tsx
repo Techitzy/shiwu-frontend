@@ -167,7 +167,7 @@ const EventDetailScreen = () => {
             <Ionicons name="arrow-back" size={24} color={textColor} />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, {color: textColor}]}>
-            {event.title.toUpperCase()}
+            {event?.title?.toUpperCase()}
           </Text>
         </View>
         <Menu>

@@ -46,7 +46,7 @@ const TrendingEvent = ({event}) => {
           ]}
           numberOfLines={1}
           ellipsizeMode="tail">
-          {event?.title.toUpperCase()}
+          {event?.title?.toUpperCase()}
         </Text>
         <View style={styles.trendingEventTimeCity}>
           <View style={styles.timeContainer}>
@@ -78,7 +78,7 @@ const TrendingEvent = ({event}) => {
               ]}
               numberOfLines={1}
               ellipsizeMode="tail">
-              {event.meta?.area}, {event.location}
+            {event?.meta?.area}, {event?.location}
             </Text>
           </View>
           <View style={styles.locationContainer}>
@@ -88,14 +88,14 @@ const TrendingEvent = ({event}) => {
               color={eventInformation}
             />
             <Text style={[styles.trendingEventCity, {color: eventInformation}]}>
-              {5}/{event.meta.restrictions.max_participants} filled
+              {5}/{event?.meta?.restrictions?.max_participants} filled
             </Text>
           </View>
         </View>
         {/* Price Tag */}
         <View style={styles.priceTag}>
           <Text style={[styles.priceText, {color: primaryColor.main}]}>
-            Rs{event.meta.price}
+            Rs{event?.meta?.price}
           </Text>
         </View>
       </View>
