@@ -6,7 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 export const UserContext = createContext();
 
-export const UserProvider = ({children}) => {
+export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessToken] = useState(null);
@@ -17,10 +17,9 @@ export const UserProvider = ({children}) => {
       setLoading(true);
       try {
         const savedUser = await AsyncStorage.getItem('userDetails');
-        let latestUserData = null;
 
         if (savedUser) {
-          latestUserData = JSON.parse(savedUser);
+          let latestUserData = JSON.parse(savedUser);
           setUser(latestUserData);
 
           // Set the authorization header
@@ -29,43 +28,38 @@ export const UserProvider = ({children}) => {
               'Authorization'
             ] = `Bearer ${latestUserData.accessToken}`;
           }
-        }
 
-        if (!JSON.parse(savedUser).location) {
-          try {
-            const {status} = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-              console.error('Location permission denied');
-              return;
+          // Fetch location if not already saved
+          if (!latestUserData.location) {
+            try {
+              const { status } = await Location.requestForegroundPermissionsAsync();
+              if (status === 'granted') {
+                const position = await Location.getCurrentPositionAsync({
+                  accuracy: Location.Accuracy.High,
+                });
+                const { latitude, longitude } = position.coords;
+                const response = await axios.get(
+                  `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDEp4eMaWFDi6psYCa4NSc3NONttlxD3Xo`,
+                );
+                const address = response.data.results[0];
+                const city = address.address_components.find(comp =>
+                  comp.types.includes('locality'),
+                )?.long_name;
+
+                if (city) {
+                  const updatedUser = { ...latestUserData, location: city };
+                  setUser(updatedUser);
+                  await AsyncStorage.setItem('userDetails', JSON.stringify(updatedUser));
+                }
+              }
+            } catch (locationError) {
+              console.warn('Location fetching error:', locationError);
             }
-
-            const position = await Location.getCurrentPositionAsync({
-              accuracy: Location.Accuracy.High,
-            });
-
-            const {latitude, longitude} = position.coords;
-            const response = await axios.get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDEp4eMaWFDi6psYCa4NSc3NONttlxD3Xo`,
-            );
-            const address = response.data.results[0];
-            const city = address.address_components.find(comp =>
-              comp.types.includes('locality'),
-            ).long_name;
-
-            if (latestUserData) {
-              const updatedUser = {...latestUserData, location: city};
-              setUser(updatedUser);
-              await AsyncStorage.setItem(
-                'userDetails',
-                JSON.stringify(updatedUser),
-              );
-            }
-          } catch (error) {
-            console.error('Location fetching error:', error);
           }
         }
+        // No savedUser → user stays null → auth guard kicks in
       } catch (error) {
-        console.error('Error loading or updating user data:', error.message);
+        console.error('Error loading user data:', error.message);
       } finally {
         setLoading(false);
       }
@@ -105,7 +99,7 @@ export const UserProvider = ({children}) => {
     try {
       const response = await axios.post(
         `https://shivoo-backend.onrender.com/user_auth/login`,
-        {id: email, password},
+        { id: email, password },
       );
 
       if (response.status === 200 && response.data) {
@@ -114,7 +108,7 @@ export const UserProvider = ({children}) => {
         // Fetch user details
         const userDetailsResponse = await axios.get(
           `https://shivoo-backend.onrender.com/user_auth/user`,
-          {params: {_id: email, id_src: 'user_email'}},
+          { params: { _id: email, id_src: 'user_email' } },
         );
 
         const userDetails = userDetailsResponse.data;
@@ -240,7 +234,7 @@ export const UserProvider = ({children}) => {
         `https://shivoo-backend.onrender.com/user_auth/users?access_token=${encodeURIComponent(
           accessTokenDetails.trim(),
         )}`,
-        {location: location},
+        { location: location },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -282,7 +276,7 @@ export const UserProvider = ({children}) => {
         },
       );
 
-      const {file_url, file_name} = response.data;
+      const { file_url, file_name } = response.data;
 
       const updateResponse = await axios.patch(
         `https://shivoo-backend.onrender.com/user_auth/users/${user.id}`,
@@ -310,7 +304,7 @@ export const UserProvider = ({children}) => {
 
   if (loading) {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );

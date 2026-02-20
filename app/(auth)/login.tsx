@@ -44,7 +44,7 @@ const LoginScreen = () => {
     ? darkColors.informationText
     : lightColors.informationText;
 
-  const validateEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleContinue = async () => {
     if (step === 'email') {
@@ -68,7 +68,7 @@ const LoginScreen = () => {
       setIsLoading(true);
       try {
         const value = await login(email, password);
-        value && router.push('/(tabs)');
+        value && router.replace('/(tabs)');
         // Login success logic handled by UserContext and root _layout.tsx
       } catch (err) {
         setError('Invalid password');
@@ -78,7 +78,7 @@ const LoginScreen = () => {
     }
   };
 
-  const smoothTransition = nextStep => {
+  const smoothTransition = (nextStep: string) => {
     Animated.timing(opacity, {
       toValue: 0,
       duration: 300,

@@ -1,56 +1,69 @@
-import { Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { UserProvider, UserContext } from '../context/UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Stack, useRouter } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useContext, useEffect, useState } from 'react';
+import { MenuProvider } from 'react-native-popup-menu';
 import { BusinessProvider } from '../context/businessContext';
 import { EventProvider } from '../context/EventContext';
-import { MenuProvider } from 'react-native-popup-menu';
-import { useContext } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext, UserProvider } from '../context/UserContext';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-const checkFirstLaunch = async () => {
-  const hasLaunched = await AsyncStorage.getItem('hasLaunched');
-  if (hasLaunched === null) {
-    await AsyncStorage.setItem('hasLaunched', 'true');
-    return true;
-  }
-  return false;
-};
 
 function RootLayoutNav() {
   const { user } = useContext(UserContext);
   const [isReady, setIsReady] = useState(false);
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    checkFirstLaunch().then(isFirst => {
-      setIsFirstLaunch(isFirst);
-      setIsReady(true);
-      SplashScreen.hideAsync();
-    });
+    const prepare = async () => {
+      try {
+        const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+        if (hasLaunched === null) {
+          await AsyncStorage.setItem('hasLaunched', 'true');
+          setIsFirstLaunch(true);
+        } else {
+          setIsFirstLaunch(false);
+        }
+      } catch {
+        setIsFirstLaunch(false);
+      } finally {
+        setIsReady(true);
+        SplashScreen.hideAsync();
+      }
+    };
+    prepare();
   }, []);
 
-  if (!isReady || isFirstLaunch === null) return null;
+  // Redirect unauthenticated users on first load
+  useEffect(() => {
+    if (!isReady || user) return;
+    if (isFirstLaunch) {
+      router.replace('/(auth)/walkthrough');
+    } else {
+      router.replace('/(auth)/login');
+    }
+  }, [isReady, isFirstLaunch, user]);
+
+  if (!isReady) return null;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {!user ? (
-        <Stack.Screen 
-          name="(auth)" 
-          options={{ headerShown: false }} 
-          initialParams={{ isFirstLaunch }}
-        />
+      {user ? (
+        // ── Authenticated ─────────────────────────────────────────────────────
+        // Auth screens are NOT registered here → back button has nowhere to go
+        <>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="location/select" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="event/[id]" options={{ title: 'Event Details' }} />
+          <Stack.Screen name="event/approve-request/[id]" options={{ title: 'Approve Requests' }} />
+          <Stack.Screen name="event/edit/[id]" options={{ title: 'Edit Event' }} />
+        </>
       ) : (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        // ── Unauthenticated ───────────────────────────────────────────────────
+        // Tabs are NOT registered here → user cannot deep-link into the app
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       )}
-      {/* Shared Modals or full-screen stacks */}
-      <Stack.Screen name="location/select" options={{ presentation: 'modal' }} />
-      <Stack.Screen name="event/[id]" options={{ title: 'Event Details' }} />
-      <Stack.Screen name="event/approve-request/[id]" options={{ title: 'Approve Requests' }} />
-      <Stack.Screen name="event/edit/[id]" options={{ title: 'Edit Event' }} />
     </Stack>
   );
 }

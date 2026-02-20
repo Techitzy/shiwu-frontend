@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
-  View,
+  Alert,
+  Button,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  Button,
-  StyleSheet,
-  Alert,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 
 const RoleSelectionScreen = () => {
   const [role, setRole] = useState<string | null>(null);
@@ -26,9 +26,9 @@ const RoleSelectionScreen = () => {
     Alert.alert('Success', `You selected ${role} in ${location}.`);
 
     if (role === 'Host') {
-      router.push('/(tabs)/create');
+      router.replace('/(tabs)/create');
     } else {
-      router.push('/(tabs)');
+      router.replace('/(tabs)');
     }
   };
 
@@ -68,7 +68,7 @@ const RoleSelectionScreen = () => {
       {role === 'Host' && (
         <Button
           title="Create Event"
-          onPress={() => router.push('/(tabs)/create')}
+          onPress={() => router.replace('/(tabs)/create')}
         />
       )}
 
