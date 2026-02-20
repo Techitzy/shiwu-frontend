@@ -1,17 +1,17 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  Modal,
-  useColorScheme,
-} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import {lightColors, darkColors, primaryColor} from '../../../themes/basics';
+import React, { useState } from 'react';
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from 'react-native';
+import { darkColors, lightColors, primaryColor } from '../../../themes/basics';
 
-const TicketBookingModal = ({isVisible, maxTickets, onClose, onContinue}) => {
+const TicketBookingModal = ({ isVisible, maxTickets, pricePerTicket = 0, onClose, onContinue }) => {
   const [ticketCount, setTicketCount] = useState(1);
   const colorScheme = useColorScheme();
   const isDarkTheme = colorScheme === 'dark';
@@ -25,6 +25,8 @@ const TicketBookingModal = ({isVisible, maxTickets, onClose, onContinue}) => {
   const informationText = isDarkTheme
     ? darkColors.informationText
     : lightColors.informationText;
+
+  const totalAmount = ticketCount * pricePerTicket;
 
   const handleTicketInput = value => {
     const numericValue = parseInt(value, 10);
@@ -60,7 +62,7 @@ const TicketBookingModal = ({isVisible, maxTickets, onClose, onContinue}) => {
           </TouchableOpacity>
 
           {/* Modal Title */}
-          <Text style={[styles.modalTitle, {color: textColor}]}>
+          <Text style={[styles.modalTitle, { color: textColor }]}>
             Select Tickets
           </Text>
 
@@ -93,11 +95,34 @@ const TicketBookingModal = ({isVisible, maxTickets, onClose, onContinue}) => {
             </TouchableOpacity>
           </View>
 
+          {/* Price Summary */}
+          {pricePerTicket > 0 && (
+            <View style={[styles.priceSummary, { borderColor: isDarkTheme ? '#444' : '#e0e0e0' }]}>
+              <View style={styles.priceRow}>
+                <Text style={[styles.priceLabel, { color: textColor }]}>
+                  ₹{pricePerTicket} × {ticketCount} ticket{ticketCount > 1 ? 's' : ''}
+                </Text>
+                <Text style={[styles.priceValue, { color: textColor }]}>
+                  ₹{totalAmount}
+                </Text>
+              </View>
+              <View style={[styles.priceDivider, { backgroundColor: isDarkTheme ? '#444' : '#e0e0e0' }]} />
+              <View style={styles.priceRow}>
+                <Text style={[styles.totalLabel, { color: textColor }]}>Total</Text>
+                <Text style={[styles.totalValue, { color: primaryColor.main }]}>
+                  ₹{totalAmount}
+                </Text>
+              </View>
+            </View>
+          )}
+
           {/* Continue Button */}
           <TouchableOpacity
             style={styles.continueButton}
-            onPress={() => onContinue(ticketCount)}>
-            <Text style={styles.continueButtonText}>Continue</Text>
+            onPress={() => onContinue({ ticketCount, totalAmount })}>
+            <Text style={styles.continueButtonText}>
+              {pricePerTicket > 0 ? `Pay ₹${totalAmount}` : 'Continue'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -162,6 +187,37 @@ const styles = StyleSheet.create({
   ticketInputDark: {
     color: '#fff',
     borderColor: '#555',
+  },
+  priceSummary: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  priceLabel: {
+    fontSize: 14,
+  },
+  priceValue: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  priceDivider: {
+    height: 1,
+    marginVertical: 6,
+  },
+  totalLabel: {
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  totalValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   continueButton: {
     backgroundColor: primaryColor.main,

@@ -1,35 +1,41 @@
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, {useContext, useEffect, useState} from 'react';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
+  Alert,
   Image,
-  StyleSheet,
-  useColorScheme,
-  TouchableOpacity,
+  Linking,
   ScrollView,
   Share,
-  Linking,
-  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
 } from 'react-native';
-import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 import ImageCarousel from '../../components/shared/carousel/ImageCarousel';
+import CancellationPolicy from '../../components/shared/event/CancellationPolicy';
 import HostDetails from '../../components/shared/event/HostDetails';
 import TermsAndConditions from '../../components/shared/event/TermsAndConditions';
 import TicketBookingModal from '../../components/shared/event/TicketBookingModal';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
-import {EventContext} from '../../context/EventContext';
-import {formatDate, formatTime} from '../../services/utils';
-import CancellationPolicy from '../../components/shared/event/CancellationPolicy';
-import {
-  Menu,
-  MenuOptions,
-  MenuOption,
-  MenuTrigger,
-} from 'react-native-popup-menu';
 import DeleteEventModal from '../../components/shared/modals/DeleteEventModal';
-// import RazorpayCheckout from 'react-native-razorpay'; // Commented out until environment is ready
 import ProgressModal from '../../components/shared/modals/ProgressModal';
+import RazorpayWebModal from '../../components/shared/modals/RazorpayWebModal';
+import { EventContext } from '../../context/EventContext';
+import { UserContext } from '../../context/UserContext';
+import { createOrder } from '../../services/PaymentService';
+import { formatDate, formatTime } from '../../services/utils';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
+
+// ─── Razorpay config ─────────────────────────────────────────────────────────
+const RAZORPAY_KEY = 'rzp_test_i4HoYQt0NerAqC';
+// ─────────────────────────────────────────────────────────────────────────────
 
 const EventDetailScreen = () => {
   const { id, event: eventString } = useLocalSearchParams();
@@ -38,11 +44,20 @@ const EventDetailScreen = () => {
   const router = useRouter();
   const colorScheme = useColorScheme();
 
-  const {loading, host, fetchHostData, deleteEvent} = useContext(EventContext);
+  const { loading, host, fetchHostData, deleteEvent, bookEvent } = useContext(EventContext);
+  const { user } = useContext(UserContext);
+
   const [showPopup, setShowPopup] = useState(false);
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
+
+  // Razorpay payment state
+  const [razorpayVisible, setRazorpayVisible] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [pendingTicketCount, setPendingTicketCount] = useState(1);
+  const [razorpayOrderId, setRazorpayOrderId] = useState<string | null>(null);
+  const [progressMessage, setProgressMessage] = useState('Processing...');
 
   const isDarkTheme = colorScheme === 'dark';
   const backgroundColor = isDarkTheme
@@ -62,8 +77,8 @@ const EventDetailScreen = () => {
 
   if (!event) {
     return (
-      <View style={[styles.container, {backgroundColor, justifyContent: 'center', alignItems: 'center'}]}>
-        <Text style={{color: textColor}}>Event not found or loading...</Text>
+      <View style={[styles.container, { backgroundColor, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: textColor }}>Event not found or loading...</Text>
       </View>
     );
   }
@@ -72,22 +87,77 @@ const EventDetailScreen = () => {
     setDescriptionExpanded(!isDescriptionExpanded);
   };
 
+  // Step 1 — Open ticket selection modal
   const handleBookEvent = () => {
     setModalVisible(true);
   };
 
-  const handleContinue = tickets => {
-    console.log(`User selected ${tickets} tickets`);
+  // Step 2 — User confirmed ticket count; create Razorpay order and open checkout
+  const handleContinue = async ({ ticketCount, totalAmount }: { ticketCount: number; totalAmount: number }) => {
     setModalVisible(false);
+    setPendingTicketCount(ticketCount);
+    setPaymentAmount(totalAmount);
+
+    try {
+      setProgressMessage('Preparing payment…');
+      setShowProgressModal(true);
+      const order = await createOrder(totalAmount);
+      setRazorpayOrderId(order.order_id ?? null);
+      setShowProgressModal(false);
+      setTimeout(() => setRazorpayVisible(true), 200);
+    } catch (error) {
+      setShowProgressModal(false);
+      Alert.alert('Error', 'Could not initiate payment. Please try again.');
+    }
   };
+
+  // Step 3a — Payment success
+  const handlePaymentSuccess = useCallback(async (paymentData: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string | null;
+    razorpay_signature: string | null;
+  }) => {
+    setRazorpayVisible(false);
+    setProgressMessage('Confirming booking…');
+    setShowProgressModal(true);
+
+    try {
+      await bookEvent(event.id, paymentData, pendingTicketCount);
+      setShowProgressModal(false);
+      Alert.alert(
+        '🎉 Booking Confirmed!',
+        `Your ${pendingTicketCount} ticket${pendingTicketCount > 1 ? 's are' : ' is'} booked!\n\nPayment ID: ${paymentData.razorpay_payment_id}`,
+        [{ text: 'Done', onPress: () => router.back() }],
+      );
+    } catch (error) {
+      setShowProgressModal(false);
+      Alert.alert(
+        'Payment Received',
+        `Payment ID: ${paymentData.razorpay_payment_id}\n\nBooking sync failed — please contact support.`,
+        [{ text: 'OK' }],
+      );
+    }
+  }, [event, pendingTicketCount, bookEvent, router]);
+
+  // Step 3b — User dismissed checkout
+  const handlePaymentDismiss = useCallback(() => {
+    setRazorpayVisible(false);
+    Alert.alert('Payment Cancelled', 'You closed the payment screen.');
+  }, []);
+
+  // Step 3c — Payment failed
+  const handlePaymentError = useCallback((description: string) => {
+    setRazorpayVisible(false);
+    Alert.alert('Payment Failed', description || 'Something went wrong. Please try again.');
+  }, []);
 
   const handleDeleteEvent = async () => {
     try {
       setShowPopup(false);
+      setProgressMessage('Deleting…');
       setShowProgressModal(true);
       await deleteEvent(event.id);
       setShowProgressModal(false);
-      // Navigate back to home
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Error deleting event:', error);
@@ -95,12 +165,13 @@ const EventDetailScreen = () => {
     }
   };
 
+
   const bookedUsers = [
-    {id: 1, image: 'https://randomuser.me/api/portraits/men/10.jpg'},
-    {id: 2, image: 'https://randomuser.me/api/portraits/men/10.jpg'},
-    {id: 3, image: 'https://randomuser.me/api/portraits/men/10.jpg'},
-    {id: 4, image: 'https://example.com/user4.jpg'},
-    {id: 5, image: 'https://example.com/user5.jpg'},
+    { id: 1, image: 'https://randomuser.me/api/portraits/men/10.jpg' },
+    { id: 2, image: 'https://randomuser.me/api/portraits/men/10.jpg' },
+    { id: 3, image: 'https://randomuser.me/api/portraits/men/10.jpg' },
+    { id: 4, image: 'https://example.com/user4.jpg' },
+    { id: 5, image: 'https://example.com/user5.jpg' },
   ];
 
   const openMaps = address => {
@@ -127,46 +198,15 @@ const EventDetailScreen = () => {
     }
   };
 
-  const handleBookEventRazor = () => {
-    Alert.alert("Payment", "Payment integration requires native setup (Razorpay).");
-    // Original Razorpay logic commented out for Expo Go compatibility during migration
-    /*
-    var options = {
-      description: 'Techitzy Event Booking',
-      image:
-        'https://d2fp3vwsy5h81q.cloudfront.net/ce827799-eea6-4e46-9f1d-f0517a55987a',
-      currency: 'INR',
-      key: 'rzp_test_i4HoYQt0NerAqC',
-      amount: event.meta.price * 100, // convert to paise
-      name: 'Techitzy',
-      prefill: {
-        email: 'gaurav.kumar@example.com',
-        contact: '9000090000',
-        name: 'Gaurav Kumar',
-      },
-      theme: {color: '#3399cc'},
-    };
-
-    RazorpayCheckout.open(options)
-      .then(data => {
-        alert(`Success: Payment ID ${data.razorpay_payment_id}`);
-        console.log(`Success: Payment ID ${data}`);
-      })
-      .catch(error => {
-        alert(`Error: ${error.code} | ${error.description}`);
-        console.log(`Error: ${error.code} | ${error.description}`);
-      });
-    */
-  };
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
-      <View style={[styles.header, {backgroundColor}]}>
+    <View style={[styles.container, { backgroundColor }]}>
+      <View style={[styles.header, { backgroundColor }]}>
         <View style={styles.headerLeft}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color={textColor} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, {color: textColor}]}>
+          <Text style={[styles.headerTitle, { color: textColor }]}>
             {event?.title?.toUpperCase()}
           </Text>
         </View>
@@ -196,11 +236,11 @@ const EventDetailScreen = () => {
                   color={textColor}
                   style={styles.iconStyle}
                 />
-                <Text style={[styles.textStyle, {color: textColor}]}>
+                <Text style={[styles.textStyle, { color: textColor }]}>
                   Share
                 </Text>
               </View>
-              <View style={[styles.divider, {backgroundColor}]} />
+              <View style={[styles.divider, { backgroundColor }]} />
             </MenuOption>
             <MenuOption
               onSelect={() => {
@@ -216,9 +256,9 @@ const EventDetailScreen = () => {
                   color={textColor}
                   style={styles.iconStyle}
                 />
-                <Text style={[styles.textStyle, {color: textColor}]}>Edit</Text>
+                <Text style={[styles.textStyle, { color: textColor }]}>Edit</Text>
               </View>
-              <View style={[styles.divider, {backgroundColor}]} />
+              <View style={[styles.divider, { backgroundColor }]} />
             </MenuOption>
             <MenuOption onSelect={() => setShowPopup(true)}>
               <View style={styles.menuItem}>
@@ -228,7 +268,7 @@ const EventDetailScreen = () => {
                   color={'red'}
                   style={styles.iconStyle}
                 />
-                <Text style={[styles.textStyle, {color: 'red'}]}>Delete</Text>
+                <Text style={[styles.textStyle, { color: 'red' }]}>Delete</Text>
               </View>
             </MenuOption>
           </MenuOptions>
@@ -241,13 +281,13 @@ const EventDetailScreen = () => {
         onDelete={handleDeleteEvent}
       />
 
-      <ProgressModal isVisible={showProgressModal} />
+      <ProgressModal isVisible={showProgressModal} message={progressMessage} />
 
       <ScrollView
-        style={[styles.container, {backgroundColor}]}
-        contentContainerStyle={{flexGrow: 1, paddingBottom: 80}}
+        style={[styles.container, { backgroundColor }]}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}>
-        <View style={[{backgroundColor}]}>
+        <View style={[{ backgroundColor }]}>
           {/* Carousel for images */}
           <ImageCarousel event={event} />
 
@@ -262,7 +302,7 @@ const EventDetailScreen = () => {
                     paddingHorizontal: category.name.length * 1 + 5,
                   }, // Adjust padding dynamically
                 ]}>
-                <Text style={[styles.categoryText, {color: '#fff'}]}>
+                <Text style={[styles.categoryText, { color: '#fff' }]}>
                   {category.name}
                 </Text>
               </View>
@@ -281,15 +321,15 @@ const EventDetailScreen = () => {
               onPress={() =>
                 router.push({
                   pathname: `/event/approve-request/${event.id}`,
-                  params: {id: event.id},
+                  params: { id: event.id },
                 })
               }>
-              <Text style={[styles.approveRequestsTitle, {color: textColor}]}>
+              <Text style={[styles.approveRequestsTitle, { color: textColor }]}>
                 Approve Requests
               </Text>
               <View style={styles.approvalList}>
                 <View style={styles.namesContainer}>
-                  <Text style={[styles.approvalName, {color: textColor}]}>
+                  <Text style={[styles.approvalName, { color: textColor }]}>
                     Rajbir Singh
                   </Text>
                   {10 > 1 && (
@@ -310,19 +350,19 @@ const EventDetailScreen = () => {
           <View style={styles.eventDetails}>
             <View style={styles.iconTextContainer}>
               <Ionicons name="calendar-outline" size={20} color={textColor} />
-              <Text style={[styles.eventTime, {color: textColor}]}>
+              <Text style={[styles.eventTime, { color: textColor }]}>
                 {formatDate(event.datetime)}
               </Text>
             </View>
             <View style={styles.iconTextContainer}>
               <Ionicons name="time-outline" size={20} color={textColor} />
-              <Text style={[styles.eventTime, {color: textColor}]}>
+              <Text style={[styles.eventTime, { color: textColor }]}>
                 {formatTime(event.datetime)}
               </Text>
             </View>
             <View style={styles.addressTextContainer}>
               <Ionicons name="location-outline" size={20} color={textColor} />
-              <Text style={[styles.eventCity, {color: textColor}]}>
+              <Text style={[styles.eventCity, { color: textColor }]}>
                 {event.address}
                 <TouchableOpacity onPress={() => openMaps(event.address)}>
                   <Feather
@@ -335,7 +375,7 @@ const EventDetailScreen = () => {
             </View>
             <View style={styles.iconTextContainer}>
               <Ionicons name="people-outline" size={20} color={textColor} />
-              <Text style={[styles.eventAgeLimit, {color: textColor}]}>
+              <Text style={[styles.eventAgeLimit, { color: textColor }]}>
                 Age Limit - {event.meta.restrictions.min_age} yrs+
               </Text>
             </View>
@@ -345,8 +385,8 @@ const EventDetailScreen = () => {
             {bookedUsers.slice(0, 3).map((user, index) => (
               <Image
                 key={user.id}
-                source={{uri: user.image}}
-                style={[styles.avatar, {marginLeft: index !== 0 ? -12 : 0}]}
+                source={{ uri: user.image }}
+                style={[styles.avatar, { marginLeft: index !== 0 ? -12 : 0 }]}
               />
             ))}
             {bookedUsers.length > 3 && (
@@ -358,9 +398,9 @@ const EventDetailScreen = () => {
               <View
                 style={[
                   styles.filledSlots,
-                  {backgroundColor: informationText},
+                  { backgroundColor: informationText },
                 ]}>
-                <Text style={[styles.filledSlotsText, {color: '#fff'}]}>
+                <Text style={[styles.filledSlotsText, { color: '#fff' }]}>
                   {bookedUsers.length}/
                   {event.meta.restrictions.max_participants} filled
                 </Text>
@@ -377,19 +417,18 @@ const EventDetailScreen = () => {
                 shadowColor: '#888',
               },
             ]}>
-            <Text style={[styles.descriptionLabel, {color: textColor}]}>
+            <Text style={[styles.descriptionLabel, { color: textColor }]}>
               About The Event
             </Text>
             <Text
               style={[
                 styles.eventDescription,
-                {lineHeight: 22, color: textColor},
+                { lineHeight: 22, color: textColor },
               ]}>
               {isDescriptionExpanded
                 ? event.description
-                : `${event.description.substring(0, 150)}${
-                    event.description.length > 150 ? '...' : ''
-                  }`}
+                : `${event.description.substring(0, 150)}${event.description.length > 150 ? '...' : ''
+                }`}
             </Text>
             {event.description.length > 150 && (
               <TouchableOpacity onPress={handleDescriptionToggle}>
@@ -416,17 +455,17 @@ const EventDetailScreen = () => {
         <View style={styles.priceContainer}>
           <Ionicons name="cash-outline" size={20} color={textColor} />
           <View>
-            <Text style={[styles.priceText, {color: textColor}]}>
+            <Text style={[styles.priceText, { color: textColor }]}>
               ₹{event.meta.price}
             </Text>
-            <Text style={[styles.availabilityText, {color: 'green'}]}>
+            <Text style={[styles.availabilityText, { color: 'green' }]}>
               Available
             </Text>
           </View>
         </View>
         <TouchableOpacity
           style={styles.bookEventButton}
-          onPress={handleBookEventRazor}>
+          onPress={handleBookEvent}>
           <Text style={styles.bookEventText}>Book Now</Text>
         </TouchableOpacity>
       </View>
@@ -434,8 +473,26 @@ const EventDetailScreen = () => {
       <TicketBookingModal
         isVisible={isModalVisible}
         maxTickets={50}
+        pricePerTicket={event?.meta?.price ?? 0}
         onClose={() => setModalVisible(false)}
         onContinue={handleContinue}
+      />
+
+      {/* Razorpay WebView checkout */}
+      <RazorpayWebModal
+        isVisible={razorpayVisible}
+        amount={paymentAmount}
+        orderId={razorpayOrderId}
+        razorpayKey={RAZORPAY_KEY}
+        prefill={{
+          name: user?.full_name ?? '',
+          email: user?.email ?? '',
+          contact: user?.phone_number ?? '',
+        }}
+        description={event?.title ?? 'Event Booking'}
+        onSuccess={handlePaymentSuccess}
+        onDismiss={handlePaymentDismiss}
+        onError={handlePaymentError}
       />
     </View>
   );
@@ -506,7 +563,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowOpacity: 0.3,
     shadowRadius: 6,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     marginHorizontal: 10,
   },
   approveRequestsTitle: {
@@ -597,7 +654,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: -12,
   },
-  moreText: {color: '#fff', fontSize: 14, fontWeight: 'bold'},
+  moreText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
   descriptionContainer: {
     paddingVertical: 15,
     paddingHorizontal: 20,
@@ -606,7 +663,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowOpacity: 0.3,
     shadowRadius: 6,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     marginHorizontal: 10,
   },
   descriptionLabel: {

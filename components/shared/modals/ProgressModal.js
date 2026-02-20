@@ -1,16 +1,15 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  StyleSheet,
-  useColorScheme,
   ActivityIndicator,
+  Modal,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View
 } from 'react-native';
-import {primaryColor} from '../../../themes/basics';
+import { primaryColor } from '../../../themes/basics';
 
-const ProgressModal = ({isVisible, onCancel, onDelete}) => {
+const ProgressModal = ({ isVisible, message = 'Processing…', onCancel = undefined, onDelete = undefined }) => {
   const theme = useColorScheme();
   const isDarkTheme = theme === 'dark';
 
@@ -30,7 +29,7 @@ const ProgressModal = ({isVisible, onCancel, onDelete}) => {
               styles.modalTitle,
               isDarkTheme ? styles.darkText : styles.lightText,
             ]}>
-            Deleting...
+            {message}
           </Text>
         </View>
       </View>
@@ -54,7 +53,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

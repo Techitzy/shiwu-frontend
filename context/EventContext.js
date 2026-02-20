@@ -1,11 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import React, {createContext, useState, useEffect, useContext} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import uuid from 'react-native-uuid';
+import { confirmBooking } from '../services/PaymentService';
 
 export const EventContext = createContext();
 
-export const EventProvider = ({children}) => {
+export const EventProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -102,7 +103,7 @@ export const EventProvider = ({children}) => {
   }, [fetchRequired]);
 
   const uploadImage = async (folder, image) => {
-    const {fileName, uri} = image;
+    const { fileName, uri } = image;
     const uniqueFileName = `${uuid.v4()}_${fileName}`;
     const formData = new FormData();
     formData.append('file', {
@@ -116,7 +117,7 @@ export const EventProvider = ({children}) => {
         `https://shivoo-file-server.onrender.com/assets/${folder}/upload/${uniqueFileName}`,
         formData,
         {
-          headers: {'Content-Type': 'multipart/form-data'},
+          headers: { 'Content-Type': 'multipart/form-data' },
         },
       );
 
@@ -184,8 +185,7 @@ export const EventProvider = ({children}) => {
       if (!accessToken) throw new Error('Access token not found.');
 
       const response = await axios.patch(
-        `https://shivoo-backend.onrender.com/events/event/${
-          eventDetails.id
+        `https://shivoo-backend.onrender.com/events/event/${eventDetails.id
         }?access_token=${encodeURIComponent(accessToken.trim())}`,
         eventDetails,
         {
@@ -218,11 +218,11 @@ export const EventProvider = ({children}) => {
       }
     });
 
-    return {newImages, existingImages};
+    return { newImages, existingImages };
   };
 
   const editEventWithImages = async (eventDetails, images) => {
-    const {newImages, existingImages} = separateImages(images);
+    const { newImages, existingImages } = separateImages(images);
 
     try {
       const folder = 'event_files';
@@ -245,7 +245,7 @@ export const EventProvider = ({children}) => {
         banner_img: combinedImages[0]?.url,
         meta: {
           ...eventDetails.meta,
-          images: combinedImages.map(({url, fileName, sequence}) => ({
+          images: combinedImages.map(({ url, fileName, sequence }) => ({
             url,
             fileName,
             sequence,
@@ -286,7 +286,7 @@ export const EventProvider = ({children}) => {
         banner_img: uploadedImages[0]?.url,
         meta: {
           ...eventDetails.meta,
-          images: uploadedImages.map(({url, fileName, sequence}) => ({
+          images: uploadedImages.map(({ url, fileName, sequence }) => ({
             url,
             fileName,
             sequence,
@@ -338,6 +338,20 @@ export const EventProvider = ({children}) => {
     }
   };
 
+  /**
+   * Confirm an event booking after a successful Razorpay payment.
+   * @param {string} eventId
+   * @param {{ razorpay_payment_id, razorpay_order_id, razorpay_signature }} paymentData
+   * @param {number} ticketCount
+   */
+  const bookEvent = async (eventId, paymentData, ticketCount) => {
+    return confirmBooking({
+      eventId,
+      ticketCount,
+      ...paymentData,
+    });
+  };
+
   return (
     <EventContext.Provider
       value={{
@@ -355,6 +369,7 @@ export const EventProvider = ({children}) => {
         setEvents,
         fetchAllEvents,
         deleteEvent,
+        bookEvent,
         host,
         setHost,
         fetchHostData,
