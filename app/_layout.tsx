@@ -1,5 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useContext, useEffect, useState } from 'react';
 import { MenuProvider } from 'react-native-popup-menu';
@@ -12,38 +11,11 @@ SplashScreen.preventAutoHideAsync();
 function RootLayoutNav() {
   const { user } = useContext(UserContext);
   const [isReady, setIsReady] = useState(false);
-  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
-    const prepare = async () => {
-      try {
-        const hasLaunched = await AsyncStorage.getItem('hasLaunched');
-        if (hasLaunched === null) {
-          await AsyncStorage.setItem('hasLaunched', 'true');
-          setIsFirstLaunch(true);
-        } else {
-          setIsFirstLaunch(false);
-        }
-      } catch {
-        setIsFirstLaunch(false);
-      } finally {
-        setIsReady(true);
-        SplashScreen.hideAsync();
-      }
-    };
-    prepare();
+    SplashScreen.hideAsync();
+    setIsReady(true);
   }, []);
-
-  // Redirect unauthenticated users on first load
-  useEffect(() => {
-    if (!isReady || user) return;
-    if (isFirstLaunch) {
-      router.replace('/(auth)/walkthrough');
-    } else {
-      router.replace('/(auth)/login');
-    }
-  }, [isReady, isFirstLaunch, user]);
 
   if (!isReady) return null;
 

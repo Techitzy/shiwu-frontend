@@ -16,7 +16,9 @@ export const UserProvider = ({ children }) => {
     const loadUserData = async () => {
       setLoading(true);
       try {
+        console.log('[UserContext] AsyncStorage.getItem("userDetails") — loading...');
         const savedUser = await AsyncStorage.getItem('userDetails');
+        console.log('[UserContext] AsyncStorage.getItem("userDetails") =>', savedUser ? 'found (length: ' + savedUser.length + ')' : null);
 
         if (savedUser) {
           let latestUserData = JSON.parse(savedUser);
@@ -49,7 +51,9 @@ export const UserProvider = ({ children }) => {
                 if (city) {
                   const updatedUser = { ...latestUserData, location: city };
                   setUser(updatedUser);
+                  console.log('[UserContext] AsyncStorage.setItem("userDetails") — saving location update');
                   await AsyncStorage.setItem('userDetails', JSON.stringify(updatedUser));
+                  console.log('[UserContext] AsyncStorage.setItem("userDetails") ✓');
                 }
               }
             } catch (locationError) {
@@ -118,8 +122,12 @@ export const UserProvider = ({ children }) => {
         };
 
         // Save user details to AsyncStorage
+        console.log('[UserContext] login — AsyncStorage.setItem("userDetails") saving...');
         await AsyncStorage.setItem('userDetails', JSON.stringify(userData));
+        console.log('[UserContext] login — AsyncStorage.setItem("userDetails") ✓');
+        console.log('[UserContext] login — AsyncStorage.setItem("accessToken") saving...');
         await AsyncStorage.setItem('accessToken', JSON.stringify(accessToken));
+        console.log('[UserContext] login — AsyncStorage.setItem("accessToken") ✓');
 
         // Update state and set default headers
         setUser(userData);
@@ -141,8 +149,12 @@ export const UserProvider = ({ children }) => {
     try {
       if (user) setUser(null);
       setAccessToken(null);
+      console.log('[UserContext] logout — AsyncStorage.removeItem("userDetails") ...');
       await AsyncStorage.removeItem('userDetails');
+      console.log('[UserContext] logout — AsyncStorage.removeItem("userDetails") ✓');
+      console.log('[UserContext] logout — AsyncStorage.removeItem("accessToken") ...');
       await AsyncStorage.removeItem('accessToken');
+      console.log('[UserContext] logout — AsyncStorage.removeItem("accessToken") ✓');
       delete axios.defaults.headers.common['Authorization'];
     } catch (error) {
       console.log(error);
@@ -183,8 +195,12 @@ export const UserProvider = ({ children }) => {
           accessToken,
         };
 
+        console.log('[UserContext] signUp — AsyncStorage.setItem("userDetails") saving...');
         await AsyncStorage.setItem('userDetails', JSON.stringify(userData));
+        console.log('[UserContext] signUp — AsyncStorage.setItem("userDetails") ✓');
+        console.log('[UserContext] signUp — AsyncStorage.setItem("accessToken") saving...');
         await AsyncStorage.setItem('accessToken', JSON.stringify(accessToken));
+        console.log('[UserContext] signUp — AsyncStorage.setItem("accessToken") ✓');
         setUser(userData);
         setAccessToken(accessToken);
         axios.defaults.headers.common[
@@ -225,7 +241,9 @@ export const UserProvider = ({ children }) => {
 
   const updateUserLocation = async location => {
     try {
+      console.log('[UserContext] updateUserLocation — AsyncStorage.getItem("accessToken") ...');
       const accessTokenDetails = await AsyncStorage.getItem('accessToken');
+      console.log('[UserContext] updateUserLocation — accessToken:', accessTokenDetails ? '✓ found' : '✗ null');
 
       if (!accessTokenDetails) {
         throw new Error('Access token not found.');
@@ -249,7 +267,9 @@ export const UserProvider = ({ children }) => {
         };
         setUser(updatedUser);
 
+        console.log('[UserContext] updateUserLocation — AsyncStorage.setItem("userDetails") saving...');
         await AsyncStorage.setItem('userDetails', JSON.stringify(updatedUser));
+        console.log('[UserContext] updateUserLocation — AsyncStorage.setItem("userDetails") ✓');
       }
     } catch (error) {
       console.error('Error updating location:', error);
@@ -296,7 +316,9 @@ export const UserProvider = ({ children }) => {
       };
       setUser(updatedUser);
 
+      console.log('[UserContext] uploadProfileImage — AsyncStorage.setItem("userDetails") saving...');
       await AsyncStorage.setItem('userDetails', JSON.stringify(updatedUser));
+      console.log('[UserContext] uploadProfileImage — AsyncStorage.setItem("userDetails") ✓');
     } catch (error) {
       console.error('Error uploading image:', error);
     }

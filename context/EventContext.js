@@ -18,7 +18,9 @@ export const EventProvider = ({ children }) => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
+      console.log('[EventContext] fetchCategories — AsyncStorage.getItem("accessToken") ...');
       const accessTokenDetails = await AsyncStorage.getItem('accessToken');
+      console.log('[EventContext] fetchCategories — accessToken:', accessTokenDetails ? '✓ found' : '✗ null');
 
       if (!accessTokenDetails) {
         throw new Error('Access token not found.');
@@ -57,7 +59,9 @@ export const EventProvider = ({ children }) => {
 
   const fetchAmenities = async () => {
     try {
+      console.log('[EventContext] fetchAmenities — AsyncStorage.getItem("accessToken") ...');
       const accessTokenDetails = await AsyncStorage.getItem('accessToken');
+      console.log('[EventContext] fetchAmenities — accessToken:', accessTokenDetails ? '✓ found' : '✗ null');
 
       if (!accessTokenDetails) {
         throw new Error('Access token not found.');
@@ -134,7 +138,9 @@ export const EventProvider = ({ children }) => {
 
   const addEvent = async eventDetails => {
     try {
+      console.log('[EventContext] addEvent — AsyncStorage.getItem("accessToken") ...');
       const accessToken = await AsyncStorage.getItem('accessToken');
+      console.log('[EventContext] addEvent — accessToken:', accessToken ? '✓ found' : '✗ null');
       if (!accessToken) throw new Error('Access token not found.');
 
       const response = await axios.post(
@@ -158,7 +164,9 @@ export const EventProvider = ({ children }) => {
 
   const deleteEvent = async eventId => {
     try {
+      console.log('[EventContext] deleteEvent — AsyncStorage.getItem("accessToken") ...');
       const accessToken = await AsyncStorage.getItem('accessToken');
+      console.log('[EventContext] deleteEvent — accessToken:', accessToken ? '✓ found' : '✗ null');
       if (!accessToken) throw new Error('Access token not found.');
 
       const response = await axios.delete(
@@ -181,7 +189,9 @@ export const EventProvider = ({ children }) => {
 
   const updateEvent = async eventDetails => {
     try {
+      console.log('[EventContext] updateEvent — AsyncStorage.getItem("accessToken") ...');
       const accessToken = await AsyncStorage.getItem('accessToken');
+      console.log('[EventContext] updateEvent — accessToken:', accessToken ? '✓ found' : '✗ null');
       if (!accessToken) throw new Error('Access token not found.');
 
       const response = await axios.patch(

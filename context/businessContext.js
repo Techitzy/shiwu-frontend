@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {createContext, useContext, useState, useEffect} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 // Dummy data for events
 const eventsData = [
@@ -111,7 +111,7 @@ const eventsData = [
 // Create Context
 const BusinessContext = createContext();
 
-export const BusinessProvider = ({children}) => {
+export const BusinessProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
   const [userPostedEvents, setUserPostedEvents] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
@@ -121,7 +121,9 @@ export const BusinessProvider = ({children}) => {
   const fetchUserPostedEvents = async () => {
     try {
       setIsLoading(true);
+      console.log('[BusinessContext] fetchUserPostedEvents — AsyncStorage.getItem("accessToken") ...');
       const accessToken = await AsyncStorage.getItem('accessToken');
+      console.log('[BusinessContext] fetchUserPostedEvents — accessToken:', accessToken ? '✓ found' : '✗ null');
       if (!accessToken) throw new Error('Access token not found.');
 
       const response = await axios.get(
