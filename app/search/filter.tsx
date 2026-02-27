@@ -13,6 +13,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import DatePicker from 'react-native-ui-datepicker';
 
 const SearchFilterScreen = () => {
@@ -30,102 +31,104 @@ const SearchFilterScreen = () => {
   todayAtMidnight.setHours(0, 0, 0, 0);
 
   return (
-    <ScrollView
-      style={[
-        styles.container,
-        { backgroundColor: isDarkMode ? '#000' : '#fff' },
-      ]}
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}>
-      <View style={[{ backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
-        <View style={[styles.header, { backgroundColor: headerBackgroundColor }]}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={headerTextColor} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-            Filter
-          </Text>
-        </View>
-
-        <View style={styles.locationContainer}>
-          <Text style={[styles.label, { color: isDarkMode ? '#fff' : '#333' }]}>
-            Location
-          </Text>
-          <View style={styles.inputContainer}>
-            <Ionicons
-              name="location-outline"
-              size={20}
-              color="#888"
-              style={styles.icon}
-            />
-            <TextInput
-              style={[styles.input, { color: isDarkMode ? '#fff' : '#333' }]}
-              placeholder="Search your location"
-              placeholderTextColor="#888"
-            />
-          </View>
-        </View>
-
-        <View style={styles.dateContainer}>
-          <Text style={[styles.label, { color: isDarkMode ? '#fff' : '#333' }]}>
-            Select Date
-          </Text>
-          <TouchableOpacity
-            onPress={() => setDatePickerModalVisibility(true)}
-            style={styles.datePicker}>
-            <Text style={{ color: isDarkMode ? '#fff' : '#333' }}>
-              {selectedDate
-                ? dayjs(selectedDate).isSame(dayjs(), 'day')
-                  ? 'Today'
-                  : dayjs(selectedDate).isSame(dayjs().add(1, 'day'), 'day')
-                    ? 'Tomorrow'
-                    : dayjs(selectedDate).format('ddd D MMM')
-                : 'Pick a date'}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView
+        style={[
+          styles.container,
+          { backgroundColor: isDarkMode ? '#000' : '#fff' },
+        ]}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}>
+        <View style={[{ backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
+          <View style={[styles.header, { backgroundColor: headerBackgroundColor }]}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={headerTextColor} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: headerTextColor }]}>
+              Filter
             </Text>
-          </TouchableOpacity>
-        </View>
+          </View>
 
-        <Modal
-          visible={isDatePickerModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setDatePickerModalVisibility(false)}>
-          <View style={styles.modalBackground}>
-            <View
-              style={[
-                styles.modalContainer,
-                { backgroundColor: isDarkMode ? '#333' : '#fff' },
-              ]}>
-              <View style={styles.titleContainer}>
-                <Text
-                  style={[
-                    styles.modalTitle,
-                    { color: isDarkMode ? '#fff' : '#333' },
-                  ]}>
-                  When are you planning to go?
-                </Text>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => setDatePickerModalVisibility(false)}>
-                  <Ionicons name="close" size={24} color="#888" />
-                </TouchableOpacity>
-              </View>
-
-              <DatePicker
-                date={selectedDate || new Date()}
-                mode="single"
-                minDate={todayAtMidnight}
-                onChange={params => {
-                  setSelectedDate(params.date);
-                  setDatePickerModalVisibility(false);
-                }}
-                theme={isDarkMode ? 'dark' : 'light'}
+          <View style={styles.locationContainer}>
+            <Text style={[styles.label, { color: isDarkMode ? '#fff' : '#333' }]}>
+              Location
+            </Text>
+            <View style={styles.inputContainer}>
+              <Ionicons
+                name="location-outline"
+                size={20}
+                color="#888"
+                style={styles.icon}
+              />
+              <TextInput
+                style={[styles.input, { color: isDarkMode ? '#fff' : '#333' }]}
+                placeholder="Search your location"
+                placeholderTextColor="#888"
               />
             </View>
           </View>
-        </Modal>
-      </View>
-    </ScrollView>
+
+          <View style={styles.dateContainer}>
+            <Text style={[styles.label, { color: isDarkMode ? '#fff' : '#333' }]}>
+              Select Date
+            </Text>
+            <TouchableOpacity
+              onPress={() => setDatePickerModalVisibility(true)}
+              style={styles.datePicker}>
+              <Text style={{ color: isDarkMode ? '#fff' : '#333' }}>
+                {selectedDate
+                  ? dayjs(selectedDate).isSame(dayjs(), 'day')
+                    ? 'Today'
+                    : dayjs(selectedDate).isSame(dayjs().add(1, 'day'), 'day')
+                      ? 'Tomorrow'
+                      : dayjs(selectedDate).format('ddd D MMM')
+                  : 'Pick a date'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <Modal
+            visible={isDatePickerModalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setDatePickerModalVisibility(false)}>
+            <View style={styles.modalBackground}>
+              <View
+                style={[
+                  styles.modalContainer,
+                  { backgroundColor: isDarkMode ? '#333' : '#fff' },
+                ]}>
+                <View style={styles.titleContainer}>
+                  <Text
+                    style={[
+                      styles.modalTitle,
+                      { color: isDarkMode ? '#fff' : '#333' },
+                    ]}>
+                    When are you planning to go?
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.cancelButton}
+                    onPress={() => setDatePickerModalVisibility(false)}>
+                    <Ionicons name="close" size={24} color="#888" />
+                  </TouchableOpacity>
+                </View>
+
+                <DatePicker
+                  date={selectedDate || new Date()}
+                  mode="single"
+                  minDate={todayAtMidnight}
+                  onChange={params => {
+                    setSelectedDate(params.date);
+                    setDatePickerModalVisibility(false);
+                  }}
+                  theme={isDarkMode ? 'dark' : 'light'}
+                />
+              </View>
+            </View>
+          </Modal>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

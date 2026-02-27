@@ -1,56 +1,59 @@
-import { useRouter } from 'expo-router';
-import React, {useContext} from 'react';
-import {View, Text, TouchableOpacity, useColorScheme} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import {UserContext} from '../../context/UserContext';
+import { useRouter } from 'expo-router';
+import React, { useContext } from 'react';
+import { Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserContext } from '../../context/UserContext';
 
 const CustomHeader = () => {
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const theme = useColorScheme();
   const router = useRouter();
   const styles = getStyles(theme);
   const location = user?.location || 'Select Location';
 
   return (
-    <View style={styles.headerContainer}>
-      <View style={styles.greetingContainer}>
-        <Text style={styles.greetingText}>Hi, {user?.full_name || 'Guest'}</Text>
-        <View style={styles.locationContainer}>
-          <TouchableOpacity
-            onPress={() => router.push('/location/select')}
-            style={styles.locationButton}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.headerContainer}>
+        <View style={styles.greetingContainer}>
+          <Text style={styles.greetingText}>Hi, {user?.full_name || 'Guest'}</Text>
+          <View style={styles.locationContainer}>
+            <TouchableOpacity
+              onPress={() => router.push('/location/select')}
+              style={styles.locationButton}>
+              <Ionicons
+                name="location-outline"
+                size={16}
+                color={styles.iconColor}
+              />
+              <Text style={styles.locationText}>{location}</Text>
+              <Ionicons
+                style={styles.forwardIcon}
+                name="chevron-forward"
+                size={10}
+                color={styles.iconColor}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => router.push('/notification')}>
             <Ionicons
-              name="location-outline"
-              size={16}
+              name="notifications-outline"
+              size={24}
               color={styles.iconColor}
             />
-            <Text style={styles.locationText}>{location}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => router.push('/search')}>
             <Ionicons
-              style={styles.forwardIcon}
-              name="chevron-forward"
-              size={10}
+              name="search-outline"
+              size={24}
               color={styles.iconColor}
             />
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => router.push('/notification')}>
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            color={styles.iconColor}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={{marginLeft: 15}} onPress={() => router.push('/search')}>
-          <Ionicons
-            name="search-outline"
-            size={24}
-            color={styles.iconColor}
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -70,8 +73,8 @@ const getStyles = theme => {
       borderBottomWidth: 0.5,
       borderBottomColor: isDarkMode ? '#333' : '#ddd',
     },
-    avatar: {width: 40, height: 40, borderRadius: 20},
-    greetingContainer: {flex: 1, marginLeft: 10},
+    avatar: { width: 40, height: 40, borderRadius: 20 },
+    greetingContainer: { flex: 1, marginLeft: 10 },
     greetingText: {
       fontSize: 16,
       fontWeight: 'bold',
@@ -94,7 +97,7 @@ const getStyles = theme => {
     forwardIcon: {
       marginLeft: 4,
     },
-    iconContainer: {flexDirection: 'row', alignItems: 'center'},
+    iconContainer: { flexDirection: 'row', alignItems: 'center' },
     iconColor: isDarkMode ? '#fff' : '#333',
   };
 };

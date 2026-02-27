@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomPlacesAutocomplete from '../../components/shared/CustomPlacesAutocomplete';
 import ImageGrid from '../../components/shared/ImageGrid';
 import DiscardChangesModal from '../../components/shared/modals/DiscardChangesModal';
@@ -428,580 +429,582 @@ const CreateEventScreen = () => {
   }, [handleGoBack]);
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      {/* Header */}
-      <View
-        style={[
-          styles.header,
-          { borderBottomColor: isDarkTheme ? '#333' : '#ddd' },
-        ]}>
-        <TouchableOpacity onPress={handleGoBack}>
-          <Ionicons name={'chevron-back'} size={20} color={primaryColor.main} />
-        </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={[styles.container, { backgroundColor }]}>
+        {/* Header */}
         <View
-          style={{
-            flex: 3,
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}>
-          {/* Center section */}
-          <Text style={[styles.headerTitle, { color: textColor }]}>
-            Create Event
-          </Text>
-          <MaterialCommunityIcons
-            name={'party-popper'}
-            size={20}
-            style={{ marginLeft: 10 }}
-            color={primaryColor.main}
-          />
-        </View>
-      </View>
-      <DiscardChangesModal
-        isVisible={showPopup}
-        onClose={() => setShowPopup(false)}
-        onDiscard={handleDiscardChanges}
-        onKeepEditing={handleKeepEditing}
-      />
-
-      <TouchableWithoutFeedback onPress={dismissKeyboardAndDropdown}>
-        <ScrollView
-          contentContainerStyle={styles.content}
-          nestedScrollEnabled={true}
-          keyboardShouldPersistTaps="handled">
-          {/* Title */}
-          <Text style={[styles.label, { color: textColor }]}>Title of Event</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                borderColor: errors.title ? 'red' : defaultBorderColor,
-                color: textColor,
-              },
-            ]}
-            placeholder="Enter title"
-            placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
-            value={title}
-            onChangeText={text => {
-              setTitle(text);
-              if (errors.title) setErrors({ ...errors, title: '' });
-            }}
-          />
-          {errors.title ? (
-            <Text style={styles.errorText}>*{errors.title}</Text>
-          ) : null}
-
-          {/* Address */}
-          <Text style={[styles.label, { color: textColor }]}>Address</Text>
-          <View style={styles.addressContainer}>
-            <CustomPlacesAutocomplete
-              isDarkTheme={isDarkTheme}
-              address={address}
-              setAddress={setAddress}
-              errors={errors}
-              setErrors={setErrors}
-              isDropdownVisible={isDropdownVisible}
-              setIsDropdownVisible={setIsDropdownVisible}
-              setArea={setArea}
-              setCity={setCity}
-            />
-          </View>
-          {errors.address ? (
-            <Text style={styles.errorText}>*{errors.address}</Text>
-          ) : null}
-
-          {/* Category */}
-          <Text style={[styles.label, { color: textColor }]}>Category</Text>
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name="information-circle-outline"
-              size={14}
-              color={textColor}
-            />
-            <Text style={[styles.informationText, { color: textColor }]}>
-              Select up to 3 categories
+          style={[
+            styles.header,
+            { borderBottomColor: isDarkTheme ? '#333' : '#ddd' },
+          ]}>
+          <TouchableOpacity onPress={handleGoBack}>
+            <Ionicons name={'chevron-back'} size={20} color={primaryColor.main} />
+          </TouchableOpacity>
+          <View
+            style={{
+              flex: 3,
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}>
+            {/* Center section */}
+            <Text style={[styles.headerTitle, { color: textColor }]}>
+              Create Event
             </Text>
+            <MaterialCommunityIcons
+              name={'party-popper'}
+              size={20}
+              style={{ marginLeft: 10 }}
+              color={primaryColor.main}
+            />
           </View>
+        </View>
+        <DiscardChangesModal
+          isVisible={showPopup}
+          onClose={() => setShowPopup(false)}
+          onDiscard={handleDiscardChanges}
+          onKeepEditing={handleKeepEditing}
+        />
 
-          <View style={styles.chipContainer}>
-            {showAllCategories ? (
-              categories.map(cat => (
-                <TouchableOpacity
-                  key={cat.id}
-                  style={[
-                    styles.chip,
-                    {
-                      backgroundColor: cat.selected
-                        ? primaryColor.main
-                        : isDarkTheme
-                          ? '#333'
-                          : '#ddd',
-                    },
-                  ]}
-                  onPress={() => toggleCategory(cat.id)}>
-                  <Text
-                    style={{
-                      color: cat.selected ? '#fff' : textColor,
-                      fontWeight: 'bold',
-                    }}>
-                    {cat.label}
-                  </Text>
-                </TouchableOpacity>
-              ))
-            ) : loading ? (
-              // <SkeletonCategoryLoader theme={colorScheme} />
-              <></>
-            ) : (
-              categories.slice(0, 10).map(cat => (
-                <TouchableOpacity
-                  key={cat.id}
-                  style={[
-                    styles.chip,
-                    {
-                      backgroundColor: cat.selected
-                        ? primaryColor.main
-                        : isDarkTheme
-                          ? '#333'
-                          : '#ddd',
-                    },
-                  ]}
-                  onPress={() => toggleCategory(cat.id)}>
-                  <Text
-                    style={{
-                      color: cat.selected ? '#fff' : textColor,
-                      fontWeight: 'bold',
-                    }}>
-                    {cat.label}
-                  </Text>
-                </TouchableOpacity>
-              ))
-            )}
-            {!loading && (
+        <TouchableWithoutFeedback onPress={dismissKeyboardAndDropdown}>
+          <ScrollView
+            contentContainerStyle={styles.content}
+            nestedScrollEnabled={true}
+            keyboardShouldPersistTaps="handled">
+            {/* Title */}
+            <Text style={[styles.label, { color: textColor }]}>Title of Event</Text>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  borderColor: errors.title ? 'red' : defaultBorderColor,
+                  color: textColor,
+                },
+              ]}
+              placeholder="Enter title"
+              placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+              value={title}
+              onChangeText={text => {
+                setTitle(text);
+                if (errors.title) setErrors({ ...errors, title: '' });
+              }}
+            />
+            {errors.title ? (
+              <Text style={styles.errorText}>*{errors.title}</Text>
+            ) : null}
+
+            {/* Address */}
+            <Text style={[styles.label, { color: textColor }]}>Address</Text>
+            <View style={styles.addressContainer}>
+              <CustomPlacesAutocomplete
+                isDarkTheme={isDarkTheme}
+                address={address}
+                setAddress={setAddress}
+                errors={errors}
+                setErrors={setErrors}
+                isDropdownVisible={isDropdownVisible}
+                setIsDropdownVisible={setIsDropdownVisible}
+                setArea={setArea}
+                setCity={setCity}
+              />
+            </View>
+            {errors.address ? (
+              <Text style={styles.errorText}>*{errors.address}</Text>
+            ) : null}
+
+            {/* Category */}
+            <Text style={[styles.label, { color: textColor }]}>Category</Text>
+            <View style={styles.iconContainer}>
+              <Ionicons
+                name="information-circle-outline"
+                size={14}
+                color={textColor}
+              />
+              <Text style={[styles.informationText, { color: textColor }]}>
+                Select up to 3 categories
+              </Text>
+            </View>
+
+            <View style={styles.chipContainer}>
+              {showAllCategories ? (
+                categories.map(cat => (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[
+                      styles.chip,
+                      {
+                        backgroundColor: cat.selected
+                          ? primaryColor.main
+                          : isDarkTheme
+                            ? '#333'
+                            : '#ddd',
+                      },
+                    ]}
+                    onPress={() => toggleCategory(cat.id)}>
+                    <Text
+                      style={{
+                        color: cat.selected ? '#fff' : textColor,
+                        fontWeight: 'bold',
+                      }}>
+                      {cat.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              ) : loading ? (
+                // <SkeletonCategoryLoader theme={colorScheme} />
+                <></>
+              ) : (
+                categories.slice(0, 10).map(cat => (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[
+                      styles.chip,
+                      {
+                        backgroundColor: cat.selected
+                          ? primaryColor.main
+                          : isDarkTheme
+                            ? '#333'
+                            : '#ddd',
+                      },
+                    ]}
+                    onPress={() => toggleCategory(cat.id)}>
+                    <Text
+                      style={{
+                        color: cat.selected ? '#fff' : textColor,
+                        fontWeight: 'bold',
+                      }}>
+                      {cat.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+              {!loading && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    marginTop: 10,
+                    marginLeft: 10,
+                  }}>
+                  <TouchableOpacity
+                    onPress={() => setShowAllCategories(prev => !prev)}>
+                    <Text
+                      style={[styles.createButton, { color: primaryColor.main }]}>
+                      {showAllCategories ? 'Show Less' : 'Show More'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+            {errors.categories ? (
+              <Text style={styles.errorText}>*{errors.categories}</Text>
+            ) : null}
+
+            {/* Date */}
+            <View style={styles.row}>
+              <Text style={[styles.label, { color: textColor }]}>Date</Text>
+              <TouchableOpacity
+                onPress={() => setShowDatePicker(true)}
+                style={[
+                  styles.inputRow,
+                  { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
+                ]}>
+                <Ionicons
+                  name="calendar-outline"
+                  style={{ marginRight: 5 }}
+                  size={20}
+                  color={textColor}
+                />
+                <Text style={{ color: textColor }}>
+                  {date ? date.toDateString() : 'Select Date'}
+                </Text>
+              </TouchableOpacity>
+              <DatePicker
+                modal
+                open={showDatePicker}
+                date={date}
+                mode="date"
+                onConfirm={selectedDate => {
+                  setShowDatePicker(false);
+                  if (validateDate(selectedDate)) {
+                    const combinedDateTime = combineDateAndTime(
+                      selectedDate,
+                      startTime,
+                    );
+                    setDate(combinedDateTime);
+                  }
+                }}
+                onCancel={() => setShowDatePicker(false)}
+              />
+            </View>
+            {dateError ? (
+              <Text style={styles.dateTimeErrorText}>*{dateError}</Text>
+            ) : null}
+
+            {/* Start Time */}
+            <View style={styles.row}>
+              <Text style={[styles.label, { color: textColor }]}>Start Time</Text>
+              <TouchableOpacity
+                onPress={() => setShowTimePicker(true)}
+                style={[
+                  styles.inputRow,
+                  { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
+                ]}>
+                <Ionicons
+                  name="time-outline"
+                  style={{ marginRight: 5 }}
+                  size={20}
+                  color={textColor}
+                />
+                <Text style={{ color: textColor }}>
+                  {startTime
+                    ? startTime.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                    : 'Select Start Time'}
+                </Text>
+              </TouchableOpacity>
+              <DatePicker
+                modal
+                open={showTimePicker}
+                date={startTime}
+                mode="time"
+                onConfirm={selectedTime => {
+                  setShowTimePicker(false);
+                  if (validateTime(selectedTime)) {
+                    const combinedDateTime = combineDateAndTime(
+                      date,
+                      selectedTime,
+                    );
+                    setStartTime(combinedDateTime);
+                  }
+                }}
+                onCancel={() => setShowTimePicker(false)}
+              />
+            </View>
+            {timeError ? (
+              <Text style={styles.errorText}>*{timeError}</Text>
+            ) : null}
+
+            {/* Auto Approval */}
+            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+              <Text style={[styles.label, { color: textColor }]}>
+                Invitation Only
+              </Text>
+              <Switch
+                value={autoApproval}
+                onValueChange={setAutoApproval}
+                trackColor={{ false: '#ccc', true: primaryColor.main }}
+              />
+            </View>
+
+            {/* Price Per Person */}
+            <View style={styles.row}>
+              <Text style={[styles.label, { color: textColor }]}>
+                Price Per Person
+              </Text>
               <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  marginTop: 10,
-                  marginLeft: 10,
-                }}>
+                style={[
+                  styles.inputRowPrice,
+                  { borderColor: errors.price ? 'red' : defaultBorderColor },
+                ]}>
+                <Text style={{ color: textColor, marginRight: 5 }}>₹</Text>
+                <TextInput
+                  style={{ flex: 1, color: textColor }}
+                  placeholder="Enter price"
+                  placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+                  keyboardType="numeric"
+                  value={price}
+                  onChangeText={text => {
+                    setPrice(text);
+                    if (errors.price) setErrors({ ...errors, price: '' });
+                  }}
+                />
+              </View>
+            </View>
+            {errors.price ? (
+              <Text style={styles.errorText}>*{errors.price}</Text>
+            ) : null}
+
+            <TouchableOpacity
+              style={[styles.restrictionToggle, { borderColor }]}
+              onPress={toggleRestrictions}>
+              <Text style={[styles.label, { color: textColor }]}>Restrictions</Text>
+              <Ionicons
+                name={restrictionsExpanded ? 'chevron-down' : 'chevron-forward'}
+                size={20}
+                color={textColor}
+              />
+            </TouchableOpacity>
+
+            {/* Animated Restrictions Section */}
+            <Animated.View
+              style={[
+                styles.restrictionContent,
+                { height: restrictionsExpanded ? null : 0, overflow: 'hidden' },
+              ]}>
+              {restrictionsExpanded && (
+                <>
+                  {/* Max Participants */}
+                  <View style={[styles.row, styles.restrictionRow]}>
+                    <Text style={[styles.label, { color: textColor }]}>
+                      Max. Participants
+                    </Text>
+                    <View style={styles.counterContainer}>
+                      <TouchableOpacity
+                        onPress={decrementValue(setMaxParticipants)}
+                        style={styles.counterButton}>
+                        <Ionicons
+                          name="remove-circle-outline"
+                          size={20}
+                          color={primaryColor.main}
+                        />
+                      </TouchableOpacity>
+                      <TextInput
+                        style={[
+                          styles.counterInput,
+                          {
+                            borderColor: errors.maxParticipants
+                              ? 'red'
+                              : defaultBorderColor,
+                            color: textColor,
+                          },
+                        ]}
+                        value={maxParticipants}
+                        onChangeText={setMaxParticipants}
+                        keyboardType="numeric"
+                      />
+                      <TouchableOpacity
+                        onPress={incrementValue(setMaxParticipants)}
+                        style={styles.counterButton}>
+                        <Ionicons
+                          name="add-circle-outline"
+                          size={20}
+                          color={primaryColor.main}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  {errors.maxParticipants ? (
+                    <Text style={styles.errorText}>
+                      *{errors.maxParticipants}
+                    </Text>
+                  ) : null}
+
+                  {/* Min Age */}
+                  <View style={[styles.row, styles.restrictionRow]}>
+                    <Text style={[styles.label, { color: textColor }]}>
+                      Min. Age
+                    </Text>
+                    <View style={styles.counterContainer}>
+                      <TouchableOpacity
+                        onPress={decrementValue(setMinAge)}
+                        style={styles.counterButton}>
+                        <Ionicons
+                          name="remove-circle-outline"
+                          size={20}
+                          color={primaryColor.main}
+                        />
+                      </TouchableOpacity>
+                      <TextInput
+                        style={[
+                          styles.counterInput,
+                          {
+                            borderColor: errors.minAge
+                              ? 'red'
+                              : defaultBorderColor,
+                            color: textColor,
+                          },
+                        ]}
+                        value={minAge}
+                        onChangeText={setMinAge}
+                        keyboardType="numeric"
+                      />
+                      <TouchableOpacity
+                        onPress={incrementValue(setMinAge)}
+                        style={styles.counterButton}>
+                        <Ionicons
+                          name="add-circle-outline"
+                          size={20}
+                          color={primaryColor.main}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  {errors.minAge ? (
+                    <Text style={styles.errorText}>*{errors.minAge}</Text>
+                  ) : null}
+                </>
+              )}
+            </Animated.View>
+
+            {/* Description */}
+            <Text style={[styles.label, { color: textColor }]}>Description</Text>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  height: 100,
+                  borderColor: errors.description ? 'red' : defaultBorderColor,
+                  textAlignVertical: 'top',
+                },
+              ]}
+              placeholder="Enter description"
+              placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+              value={description}
+              onChangeText={text => {
+                setDescription(text);
+                if (errors.description) setErrors({ ...errors, description: '' });
+              }}
+              multiline
+            />
+            {errors.description ? (
+              <Text style={styles.errorText}>*{errors.description}</Text>
+            ) : null}
+
+            {/* Basic Amenities */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Basic Amenities
+            </Text>
+
+            {showAllAmenities ? (
+              <FlatList
+                data={amenities}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => toggleAmenity(item.id)}>
+                    <Ionicons
+                      name={item.selected ? 'checkbox-outline' : 'square-outline'}
+                      size={20}
+                      color={textColor}
+                    />
+                    <Text style={{ color: textColor, marginLeft: 8 }}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            ) : (
+              <FlatList
+                data={amenities.slice(0, 10)} // Show only the first 10 items
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => toggleAmenity(item.id)}>
+                    <Ionicons
+                      name={item.selected ? 'checkbox-outline' : 'square-outline'}
+                      size={20}
+                      color={textColor}
+                    />
+                    <Text style={{ color: textColor, marginLeft: 8 }}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+
+            {showAllAmenities && (
+              <View style={styles.newAmenityContainer}>
+                <TextInput
+                  style={[styles.input, { borderColor, color: textColor }]}
+                  placeholder="Add a new amenity"
+                  placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+                  value={newAmenity}
+                  onChangeText={setNewAmenity}
+                />
                 <TouchableOpacity
-                  onPress={() => setShowAllCategories(prev => !prev)}>
-                  <Text
-                    style={[styles.createButton, { color: primaryColor.main }]}>
-                    {showAllCategories ? 'Show Less' : 'Show More'}
-                  </Text>
+                  onPress={incrementValue(addAmenity)}
+                  style={styles.addButton}>
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={30}
+                    color={primaryColor.main}
+                  />
                 </TouchableOpacity>
               </View>
             )}
-          </View>
-          {errors.categories ? (
-            <Text style={styles.errorText}>*{errors.categories}</Text>
-          ) : null}
 
-          {/* Date */}
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: textColor }]}>Date</Text>
             <TouchableOpacity
-              onPress={() => setShowDatePicker(true)}
-              style={[
-                styles.inputRow,
-                { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
-              ]}>
-              <Ionicons
-                name="calendar-outline"
-                style={{ marginRight: 5 }}
-                size={20}
-                color={textColor}
-              />
-              <Text style={{ color: textColor }}>
-                {date ? date.toDateString() : 'Select Date'}
+              style={{ marginBottom: 10 }}
+              onPress={() => setShowAllAmenities(prev => !prev)}>
+              <Text style={[styles.createButton, { color: primaryColor.main }]}>
+                {showAllAmenities ? 'Show Less' : 'Show More'}
               </Text>
             </TouchableOpacity>
-            <DatePicker
-              modal
-              open={showDatePicker}
-              date={date}
-              mode="date"
-              onConfirm={selectedDate => {
-                setShowDatePicker(false);
-                if (validateDate(selectedDate)) {
-                  const combinedDateTime = combineDateAndTime(
-                    selectedDate,
-                    startTime,
-                  );
-                  setDate(combinedDateTime);
-                }
-              }}
-              onCancel={() => setShowDatePicker(false)}
-            />
-          </View>
-          {dateError ? (
-            <Text style={styles.dateTimeErrorText}>*{dateError}</Text>
-          ) : null}
 
-          {/* Start Time */}
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: textColor }]}>Start Time</Text>
-            <TouchableOpacity
-              onPress={() => setShowTimePicker(true)}
-              style={[
-                styles.inputRow,
-                { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
-              ]}>
+            <Text style={[styles.label, { color: textColor }]}>
+              Add Images for your event
+            </Text>
+            <View style={styles.iconContainer}>
               <Ionicons
-                name="time-outline"
-                style={{ marginRight: 5 }}
-                size={20}
+                name="information-circle-outline"
+                size={14}
                 color={textColor}
               />
-              <Text style={{ color: textColor }}>
-                {startTime
-                  ? startTime.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })
-                  : 'Select Start Time'}
+              <Text style={[styles.informationText, { color: textColor }]}>
+                The first image will be set as the banner
               </Text>
-            </TouchableOpacity>
-            <DatePicker
-              modal
-              open={showTimePicker}
-              date={startTime}
-              mode="time"
-              onConfirm={selectedTime => {
-                setShowTimePicker(false);
-                if (validateTime(selectedTime)) {
-                  const combinedDateTime = combineDateAndTime(
-                    date,
-                    selectedTime,
-                  );
-                  setStartTime(combinedDateTime);
-                }
-              }}
-              onCancel={() => setShowTimePicker(false)}
-            />
-          </View>
-          {timeError ? (
-            <Text style={styles.errorText}>*{timeError}</Text>
-          ) : null}
+            </View>
+            <GestureHandlerRootView style={styles.container}>
+              <ImageGrid images={images} setImages={handleSetImages} />
+            </GestureHandlerRootView>
+            {errors.images ? (
+              <Text style={styles.errorText}>*{errors.images}</Text>
+            ) : null}
 
-          {/* Auto Approval */}
-          <View style={[styles.row, { justifyContent: 'space-between' }]}>
-            <Text style={[styles.label, { color: textColor }]}>
-              Invitation Only
-            </Text>
-            <Switch
-              value={autoApproval}
-              onValueChange={setAutoApproval}
-              trackColor={{ false: '#ccc', true: primaryColor.main }}
-            />
-          </View>
-
-          {/* Price Per Person */}
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: textColor }]}>
-              Price Per Person
-            </Text>
             <View
               style={[
-                styles.inputRowPrice,
-                { borderColor: errors.price ? 'red' : defaultBorderColor },
+                styles.footerContainer,
+                { backgroundColor: isDarkTheme ? '#333' : '#f5f5f5' },
               ]}>
-              <Text style={{ color: textColor, marginRight: 5 }}>₹</Text>
-              <TextInput
-                style={{ flex: 1, color: textColor }}
-                placeholder="Enter price"
-                placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
-                keyboardType="numeric"
-                value={price}
-                onChangeText={text => {
-                  setPrice(text);
-                  if (errors.price) setErrors({ ...errors, price: '' });
-                }}
-              />
-            </View>
-          </View>
-          {errors.price ? (
-            <Text style={styles.errorText}>*{errors.price}</Text>
-          ) : null}
-
-          <TouchableOpacity
-            style={[styles.restrictionToggle, { borderColor }]}
-            onPress={toggleRestrictions}>
-            <Text style={[styles.label, { color: textColor }]}>Restrictions</Text>
-            <Ionicons
-              name={restrictionsExpanded ? 'chevron-down' : 'chevron-forward'}
-              size={20}
-              color={textColor}
-            />
-          </TouchableOpacity>
-
-          {/* Animated Restrictions Section */}
-          <Animated.View
-            style={[
-              styles.restrictionContent,
-              { height: restrictionsExpanded ? null : 0, overflow: 'hidden' },
-            ]}>
-            {restrictionsExpanded && (
-              <>
-                {/* Max Participants */}
-                <View style={[styles.row, styles.restrictionRow]}>
-                  <Text style={[styles.label, { color: textColor }]}>
-                    Max. Participants
-                  </Text>
-                  <View style={styles.counterContainer}>
-                    <TouchableOpacity
-                      onPress={decrementValue(setMaxParticipants)}
-                      style={styles.counterButton}>
-                      <Ionicons
-                        name="remove-circle-outline"
-                        size={20}
-                        color={primaryColor.main}
-                      />
-                    </TouchableOpacity>
-                    <TextInput
-                      style={[
-                        styles.counterInput,
-                        {
-                          borderColor: errors.maxParticipants
-                            ? 'red'
-                            : defaultBorderColor,
-                          color: textColor,
-                        },
-                      ]}
-                      value={maxParticipants}
-                      onChangeText={setMaxParticipants}
-                      keyboardType="numeric"
-                    />
-                    <TouchableOpacity
-                      onPress={incrementValue(setMaxParticipants)}
-                      style={styles.counterButton}>
-                      <Ionicons
-                        name="add-circle-outline"
-                        size={20}
-                        color={primaryColor.main}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                {errors.maxParticipants ? (
-                  <Text style={styles.errorText}>
-                    *{errors.maxParticipants}
-                  </Text>
-                ) : null}
-
-                {/* Min Age */}
-                <View style={[styles.row, styles.restrictionRow]}>
-                  <Text style={[styles.label, { color: textColor }]}>
-                    Min. Age
-                  </Text>
-                  <View style={styles.counterContainer}>
-                    <TouchableOpacity
-                      onPress={decrementValue(setMinAge)}
-                      style={styles.counterButton}>
-                      <Ionicons
-                        name="remove-circle-outline"
-                        size={20}
-                        color={primaryColor.main}
-                      />
-                    </TouchableOpacity>
-                    <TextInput
-                      style={[
-                        styles.counterInput,
-                        {
-                          borderColor: errors.minAge
-                            ? 'red'
-                            : defaultBorderColor,
-                          color: textColor,
-                        },
-                      ]}
-                      value={minAge}
-                      onChangeText={setMinAge}
-                      keyboardType="numeric"
-                    />
-                    <TouchableOpacity
-                      onPress={incrementValue(setMinAge)}
-                      style={styles.counterButton}>
-                      <Ionicons
-                        name="add-circle-outline"
-                        size={20}
-                        color={primaryColor.main}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                {errors.minAge ? (
-                  <Text style={styles.errorText}>*{errors.minAge}</Text>
-                ) : null}
-              </>
-            )}
-          </Animated.View>
-
-          {/* Description */}
-          <Text style={[styles.label, { color: textColor }]}>Description</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                height: 100,
-                borderColor: errors.description ? 'red' : defaultBorderColor,
-                textAlignVertical: 'top',
-              },
-            ]}
-            placeholder="Enter description"
-            placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
-            value={description}
-            onChangeText={text => {
-              setDescription(text);
-              if (errors.description) setErrors({ ...errors, description: '' });
-            }}
-            multiline
-          />
-          {errors.description ? (
-            <Text style={styles.errorText}>*{errors.description}</Text>
-          ) : null}
-
-          {/* Basic Amenities */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Basic Amenities
-          </Text>
-
-          {showAllAmenities ? (
-            <FlatList
-              data={amenities}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.checkboxContainer}
-                  onPress={() => toggleAmenity(item.id)}>
-                  <Ionicons
-                    name={item.selected ? 'checkbox-outline' : 'square-outline'}
-                    size={20}
-                    color={textColor}
-                  />
-                  <Text style={{ color: textColor, marginLeft: 8 }}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
-          ) : (
-            <FlatList
-              data={amenities.slice(0, 10)} // Show only the first 10 items
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.checkboxContainer}
-                  onPress={() => toggleAmenity(item.id)}>
-                  <Ionicons
-                    name={item.selected ? 'checkbox-outline' : 'square-outline'}
-                    size={20}
-                    color={textColor}
-                  />
-                  <Text style={{ color: textColor, marginLeft: 8 }}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
-          )}
-
-          {showAllAmenities && (
-            <View style={styles.newAmenityContainer}>
-              <TextInput
-                style={[styles.input, { borderColor, color: textColor }]}
-                placeholder="Add a new amenity"
-                placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
-                value={newAmenity}
-                onChangeText={setNewAmenity}
-              />
-              <TouchableOpacity
-                onPress={incrementValue(addAmenity)}
-                style={styles.addButton}>
-                <Ionicons
-                  name="add-circle-outline"
-                  size={30}
-                  color={primaryColor.main}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-
-          <TouchableOpacity
-            style={{ marginBottom: 10 }}
-            onPress={() => setShowAllAmenities(prev => !prev)}>
-            <Text style={[styles.createButton, { color: primaryColor.main }]}>
-              {showAllAmenities ? 'Show Less' : 'Show More'}
-            </Text>
-          </TouchableOpacity>
-
-          <Text style={[styles.label, { color: textColor }]}>
-            Add Images for your event
-          </Text>
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name="information-circle-outline"
-              size={14}
-              color={textColor}
-            />
-            <Text style={[styles.informationText, { color: textColor }]}>
-              The first image will be set as the banner
-            </Text>
-          </View>
-          <GestureHandlerRootView style={styles.container}>
-            <ImageGrid images={images} setImages={handleSetImages} />
-          </GestureHandlerRootView>
-          {errors.images ? (
-            <Text style={styles.errorText}>*{errors.images}</Text>
-          ) : null}
-
-          <View
-            style={[
-              styles.footerContainer,
-              { backgroundColor: isDarkTheme ? '#333' : '#f5f5f5' },
-            ]}>
-            <Text style={[styles.title, { color: textColor }]}>
-              PLEASE READ BEFORE CREATING AN EVENT:
-            </Text>
-            <View style={styles.pointsContainer}>
-              {/* <Text style={[styles.point, {color: textColor}]}>
+              <Text style={[styles.title, { color: textColor }]}>
+                PLEASE READ BEFORE CREATING AN EVENT:
+              </Text>
+              <View style={styles.pointsContainer}>
+                {/* <Text style={[styles.point, {color: textColor}]}>
                 1. We will take 15% of the ticket amount as commission.
               </Text> */}
-              <Text style={[styles.point, { color: textColor }]}>
-                1. Money will be transferred to the host upon successful
-                completion of the event.
-              </Text>
-              <Text style={[styles.point, { color: textColor }]}>
-                2. Cancellations within 24 hours of the event will not be
-                refundable.
-              </Text>
-              <Text style={[styles.point, { color: textColor }]}>
-                3. Any disputes will be handled according to our policy.
-              </Text>
+                <Text style={[styles.point, { color: textColor }]}>
+                  1. Money will be transferred to the host upon successful
+                  completion of the event.
+                </Text>
+                <Text style={[styles.point, { color: textColor }]}>
+                  2. Cancellations within 24 hours of the event will not be
+                  refundable.
+                </Text>
+                <Text style={[styles.point, { color: textColor }]}>
+                  3. Any disputes will be handled according to our policy.
+                </Text>
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
-      <View
-        style={[
-          styles.footer,
-          { backgroundColor, borderTopColor: isDarkTheme ? '#333' : '#ddd' },
-        ]}>
-        {isLoading ? (
-          <ActivityIndicator
-            style={styles.footerLoadingButton}
-            size="small"
-            color="#fff"
-          />
-        ) : (
-          <TouchableOpacity
-            style={styles.footerCreateButton}
-            onPress={handleCreateEvent}>
-            <Text style={[styles.createButtonText]}>Publish</Text>
-          </TouchableOpacity>
-        )}
+          </ScrollView>
+        </TouchableWithoutFeedback>
+        <View
+          style={[
+            styles.footer,
+            { backgroundColor, borderTopColor: isDarkTheme ? '#333' : '#ddd' },
+          ]}>
+          {isLoading ? (
+            <ActivityIndicator
+              style={styles.footerLoadingButton}
+              size="small"
+              color="#fff"
+            />
+          ) : (
+            <TouchableOpacity
+              style={styles.footerCreateButton}
+              onPress={handleCreateEvent}>
+              <Text style={[styles.createButtonText]}>Publish</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

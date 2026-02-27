@@ -11,6 +11,7 @@ import {
   useColorScheme,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { darkColors, lightColors, primaryColor } from '../../../themes/basics';
 
 const sampleUsers = [
@@ -39,53 +40,55 @@ const ApproveRequestScreen = () => {
   const informationText = '#333';
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={26} color={textColor} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: textColor }]}>
-          Approve Requests
-        </Text>
-        <TouchableOpacity style={styles.manageButton}>
-          <Text style={[styles.manageTitle, { color: textColor }]}>Manage</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={sampleUsers}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={[styles.userContainer, { borderBottomColor: isDarkTheme ? '#333' : '#ccc' }]}>
-            <Image source={{ uri: item.imageUrl }} style={styles.avatar} />
-            <Text style={[styles.userName, { color: textColor }]}>
-              {item.name}
-            </Text>
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.approveButton,
-                  { backgroundColor: primaryColor.main },
-                ]}
-                onPress={() =>
-                  Alert.alert('Approved', `${item.name} has been approved.`)
-                }>
-                <Text style={styles.buttonText}>Approve</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.rejectButton,
-                  { backgroundColor: informationText },
-                ]}
-                onPress={() =>
-                  Alert.alert('Rejected', `${item.name} has been rejected.`)
-                }>
-                <Text style={styles.buttonText}>Reject</Text>
-              </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={[styles.container, { backgroundColor }]}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back-outline" size={26} color={textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: textColor }]}>
+            Approve Requests
+          </Text>
+          <TouchableOpacity style={styles.manageButton}>
+            <Text style={[styles.manageTitle, { color: textColor }]}>Manage</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={sampleUsers}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={[styles.userContainer, { borderBottomColor: isDarkTheme ? '#333' : '#ccc' }]}>
+              <Image source={{ uri: item.imageUrl }} style={styles.avatar} />
+              <Text style={[styles.userName, { color: textColor }]}>
+                {item.name}
+              </Text>
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.approveButton,
+                    { backgroundColor: primaryColor.main },
+                  ]}
+                  onPress={() =>
+                    Alert.alert('Approved', `${item.name} has been approved.`)
+                  }>
+                  <Text style={styles.buttonText}>Approve</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.rejectButton,
+                    { backgroundColor: informationText },
+                  ]}
+                  onPress={() =>
+                    Alert.alert('Rejected', `${item.name} has been rejected.`)
+                  }>
+                  <Text style={styles.buttonText}>Reject</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
-      />
-    </View>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 

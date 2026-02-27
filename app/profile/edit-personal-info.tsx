@@ -13,6 +13,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import EmailVerificationModal from '../../components/shared/modals/EmailVerificationModal';
 import PhoneVerificationModal from '../../components/shared/modals/PhoneVerificationModal';
 import { UserContext } from '../../context/UserContext';
@@ -114,179 +115,181 @@ const EditPersonalInfoScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="close-sharp" size={26} color={textColor} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: textColor }]}>
-          Edit {label}
-        </Text>
-        <TouchableOpacity
-          onPress={handleSave}
-          disabled={isLoading}
-          style={styles.saveIcon}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={primaryColor.main} />
-          ) : (
-            <Ionicons
-              name="checkmark-sharp"
-              size={26}
-              color={primaryColor.main}
-            />
-          )}
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={[styles.container, { backgroundColor }]}>
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="close-sharp" size={26} color={textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: textColor }]}>
+            Edit {label}
+          </Text>
+          <TouchableOpacity
+            onPress={handleSave}
+            disabled={isLoading}
+            style={styles.saveIcon}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color={primaryColor.main} />
+            ) : (
+              <Ionicons
+                name="checkmark-sharp"
+                size={26}
+                color={primaryColor.main}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
 
-      {/* Conditional Rendering Based on Label */}
-      {label === 'Name' && (
-        <TextInput
-          style={[
-            styles.inputField,
-            {
-              backgroundColor: inputBackground,
-              borderColor,
-              color: textColor,
-            },
-          ]}
-          placeholder="Enter name"
-          placeholderTextColor="#888"
-          value={name}
-          onChangeText={setName}
-        />
-      )}
-
-      {label === 'Bio' && (
-        <View>
+        {/* Conditional Rendering Based on Label */}
+        {label === 'Name' && (
           <TextInput
             style={[
-              styles.textArea,
+              styles.inputField,
               {
                 backgroundColor: inputBackground,
                 borderColor,
                 color: textColor,
               },
             ]}
-            placeholder="Enter bio"
+            placeholder="Enter name"
             placeholderTextColor="#888"
-            value={bio}
-            onChangeText={setBio}
-            maxLength={400}
-            multiline
+            value={name}
+            onChangeText={setName}
           />
-          <Text style={[styles.charCount, { color: textColor }]}>
-            {bio.length}/400
-          </Text>
-        </View>
-      )}
+        )}
 
-      {label === 'Gender' && (
-        <FlatList
-          data={genderOptions}
-          keyExtractor={item => item}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.genderListItem}
-              onPress={() => setGender(item)}>
-              <Ionicons
-                name={gender === item ? 'radio-button-on' : 'radio-button-off'}
-                size={26}
-                color={gender === item ? primaryColor.main : textColor}
+        {label === 'Bio' && (
+          <View>
+            <TextInput
+              style={[
+                styles.textArea,
+                {
+                  backgroundColor: inputBackground,
+                  borderColor,
+                  color: textColor,
+                },
+              ]}
+              placeholder="Enter bio"
+              placeholderTextColor="#888"
+              value={bio}
+              onChangeText={setBio}
+              maxLength={400}
+              multiline
+            />
+            <Text style={[styles.charCount, { color: textColor }]}>
+              {bio.length}/400
+            </Text>
+          </View>
+        )}
+
+        {label === 'Gender' && (
+          <FlatList
+            data={genderOptions}
+            keyExtractor={item => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.genderListItem}
+                onPress={() => setGender(item)}>
+                <Ionicons
+                  name={gender === item ? 'radio-button-on' : 'radio-button-off'}
+                  size={26}
+                  color={gender === item ? primaryColor.main : textColor}
+                />
+                <Text style={[styles.genderText, { color: textColor }]}>
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+
+        {label === 'Email' && (
+          <View style={styles.emailContainer}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={[
+                  styles.inputField,
+                  {
+                    backgroundColor: inputBackground,
+                    borderColor,
+                    color: textColor,
+                    flex: 1,
+                  },
+                ]}
+                keyboardType="email-address"
+                placeholder="Enter email"
+                placeholderTextColor="#888"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
               />
-              <Text style={[styles.genderText, { color: textColor }]}>
-                {item}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-      )}
-
-      {label === 'Email' && (
-        <View style={styles.emailContainer}>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={[
-                styles.inputField,
-                {
-                  backgroundColor: inputBackground,
-                  borderColor,
-                  color: textColor,
-                  flex: 1,
-                },
-              ]}
-              keyboardType="email-address"
-              placeholder="Enter email"
-              placeholderTextColor="#888"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-            />
-            <Ionicons
-              name={
-                isEmailSent
-                  ? 'checkmark-circle-sharp'
-                  : 'checkmark-circle-outline'
-              }
-              size={24}
-              color={primaryColor.main}
-              style={styles.icon}
-            />
-          </View>
-
-          <EmailVerificationModal
-            visible={isEmailSent}
-            email={email}
-            onClose={() => setIsEmailSent(false)}
-            onVerifySuccess={() => setIsEmailSent(false)}
-          />
-        </View>
-      )}
-
-      {label === 'Phone Number' && (
-        <View style={styles.emailContainer}>
-          <View style={styles.inputWrapper}>
-            <TextInput
-              style={[
-                styles.inputField,
-                {
-                  backgroundColor: inputBackground,
-                  borderColor,
-                  color: textColor,
-                  flex: 1,
-                },
-              ]}
-              keyboardType="phone-pad"
-              placeholder="Enter phone number"
-              placeholderTextColor="#888"
-              value={phone}
-              onChangeText={text => {
-                const formattedText = text.replace(/[^0-9]/g, '');
-                if (formattedText.length <= 10) {
-                  setPhone(formattedText);
+              <Ionicons
+                name={
+                  isEmailSent
+                    ? 'checkmark-circle-sharp'
+                    : 'checkmark-circle-outline'
                 }
-              }}
-            />
-            <Ionicons
-              name={
-                phone.length === 10
-                  ? 'checkmark-circle-sharp'
-                  : 'checkmark-circle-outline'
-              }
-              size={24}
-              color={primaryColor.main}
-              style={styles.icon}
+                size={24}
+                color={primaryColor.main}
+                style={styles.icon}
+              />
+            </View>
+
+            <EmailVerificationModal
+              visible={isEmailSent}
+              email={email}
+              onClose={() => setIsEmailSent(false)}
+              onVerifySuccess={() => setIsEmailSent(false)}
             />
           </View>
-          <PhoneVerificationModal
-            visible={isPhoneSent}
-            phone={phone}
-            onClose={() => setIsPhoneSent(false)}
-            onVerifySuccess={() => setIsPhoneSent(false)}
-          />
-        </View>
-      )}
-    </View>
+        )}
+
+        {label === 'Phone Number' && (
+          <View style={styles.emailContainer}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={[
+                  styles.inputField,
+                  {
+                    backgroundColor: inputBackground,
+                    borderColor,
+                    color: textColor,
+                    flex: 1,
+                  },
+                ]}
+                keyboardType="phone-pad"
+                placeholder="Enter phone number"
+                placeholderTextColor="#888"
+                value={phone}
+                onChangeText={text => {
+                  const formattedText = text.replace(/[^0-9]/g, '');
+                  if (formattedText.length <= 10) {
+                    setPhone(formattedText);
+                  }
+                }}
+              />
+              <Ionicons
+                name={
+                  phone.length === 10
+                    ? 'checkmark-circle-sharp'
+                    : 'checkmark-circle-outline'
+                }
+                size={24}
+                color={primaryColor.main}
+                style={styles.icon}
+              />
+            </View>
+            <PhoneVerificationModal
+              visible={isPhoneSent}
+              phone={phone}
+              onClose={() => setIsPhoneSent(false)}
+              onVerifySuccess={() => setIsPhoneSent(false)}
+            />
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 

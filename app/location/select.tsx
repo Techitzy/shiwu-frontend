@@ -13,6 +13,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../../context/UserContext';
 import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
@@ -124,39 +125,40 @@ const SelectLocationScreen = () => {
   console.log('selected City', selectedCity);
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={26} color={textColor} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: textColor }]}>{location}</Text>
-      </View>
-
-      <View
-        style={{
-          paddingHorizontal: 16,
-          backgroundColor: inputBackground,
-          paddingBottom: 10,
-        }}>
-        {/* Search Bar */}
-        <View style={[styles.searchBar, { backgroundColor: inputBackground }]}>
-          <MaterialIcons name="search" size={20} color={textColor} />
-          <TextInput
-            style={[styles.searchInput, { color: textColor }]}
-            placeholder="Search for your city"
-            placeholderTextColor={isDarkTheme ? '#aaa' : '#888'}
-            value={searchText}
-            onChangeText={setSearchText}
-          />
-          {searchText.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchText('')}>
-              <Ionicons name="close" size={20} color={textColor} />
-            </TouchableOpacity>
-          )}
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={[styles.container, { backgroundColor }]}>
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back-outline" size={26} color={textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: textColor }]}>{location}</Text>
         </View>
-      </View>
-      {/* {showBackToTop && (
+
+        <View
+          style={{
+            paddingHorizontal: 16,
+            backgroundColor: inputBackground,
+            paddingBottom: 10,
+          }}>
+          {/* Search Bar */}
+          <View style={[styles.searchBar, { backgroundColor: inputBackground }]}>
+            <MaterialIcons name="search" size={20} color={textColor} />
+            <TextInput
+              style={[styles.searchInput, { color: textColor }]}
+              placeholder="Search for your city"
+              placeholderTextColor={isDarkTheme ? '#aaa' : '#888'}
+              value={searchText}
+              onChangeText={setSearchText}
+            />
+            {searchText.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchText('')}>
+                <Ionicons name="close" size={20} color={textColor} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+        {/* {showBackToTop && (
         <TouchableOpacity
           style={[styles.backToTopButton, {backgroundColor: 'transparent'}]}
           onPress={handleBackToTop}>
@@ -164,133 +166,134 @@ const SelectLocationScreen = () => {
         </TouchableOpacity>
       )} */}
 
-      <ScrollView
-        ref={scrollViewRef}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}>
-        {noResults ? (
-          <Text style={[styles.noResults, { color: textColor }]}>
-            We could not find any results. Please try searching some other
-            terms.
-          </Text>
-        ) : (
-          <>
-            {/* Auto Detect Location */}
-            <View
-              style={{ paddingHorizontal: 16, backgroundColor: inputBackground }}>
-              <View style={styles.autoDetectContainer}>
-                <Ionicons
-                  name="locate-outline"
-                  size={20}
-                  color={primaryColor.main}
-                />
-                <Text
-                  style={[styles.autoDetectText, { color: primaryColor.main }]}>
-                  Auto Detect My Location
-                </Text>
+        <ScrollView
+          ref={scrollViewRef}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContainer}>
+          {noResults ? (
+            <Text style={[styles.noResults, { color: textColor }]}>
+              We could not find any results. Please try searching some other
+              terms.
+            </Text>
+          ) : (
+            <>
+              {/* Auto Detect Location */}
+              <View
+                style={{ paddingHorizontal: 16, backgroundColor: inputBackground }}>
+                <View style={styles.autoDetectContainer}>
+                  <Ionicons
+                    name="locate-outline"
+                    size={20}
+                    color={primaryColor.main}
+                  />
+                  <Text
+                    style={[styles.autoDetectText, { color: primaryColor.main }]}>
+                    Auto Detect My Location
+                  </Text>
+                </View>
               </View>
-            </View>
 
-            {/* Popular Cities */}
-            {filteredPopularCities.length > 0 && (
-              <>
-                <Text
-                  style={[
-                    styles.sectionTitle,
-                    { color: textColor, paddingHorizontal: 16 },
-                  ]}>
-                  POPULAR CITIES
-                </Text>
-                <FlatList
-                  data={filteredPopularCities}
-                  numColumns={4}
-                  keyExtractor={(item, index) => item + index}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.cityItem,
-                        {
-                          backgroundColor: inputBackground,
-                          borderColor: borderBottomColor,
-                        },
-                      ]}
-                      onPress={() => handleCitySelection(item)}>
-                      {item ? (
-                        <>
-                          <Image
-                            source={cityImages[item.toLowerCase()]}
-                            style={styles.cityImage}
-                          />
-                          <View style={styles.cityTextContainer}>
-                            <Text style={[styles.cityName, { color: textColor }]}>
-                              {item}
-                            </Text>
-                            {selectedCity === item ? (
-                              <Octicons
-                                name="dot-fill"
-                                color={primaryColor.main}
-                                size={14}
-                                style={styles.dot}
-                              />
-                            ) : null}
-                          </View>
-                        </>
-                      ) : null}
-                    </TouchableOpacity>
-                  )}
-                  contentContainerStyle={styles.cityGrid}
-                />
-              </>
-            )}
-            {filteredOtherCities.length > 0 && (
-              <>
-                <Text
-                  style={[
-                    styles.sectionTitle,
-                    { color: textColor, paddingHorizontal: 16, marginBottom: 10 },
-                  ]}>
-                  OTHER CITIES
-                </Text>
-                <FlatList
-                  data={filteredOtherCities.sort((a, b) => a.localeCompare(b))} // Sort alphabetically
-                  keyExtractor={(item, index) => item + index}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.otherCityItem,
-                        {
-                          backgroundColor: inputBackground,
-                          borderColor: borderBottomColor,
-                        },
-                      ]}
-                      onPress={() => handleCitySelection(item)}>
-                      <Text
+              {/* Popular Cities */}
+              {filteredPopularCities.length > 0 && (
+                <>
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      { color: textColor, paddingHorizontal: 16 },
+                    ]}>
+                    POPULAR CITIES
+                  </Text>
+                  <FlatList
+                    data={filteredPopularCities}
+                    numColumns={4}
+                    keyExtractor={(item, index) => item + index}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
                         style={[
-                          styles.cityName,
-                          { color: textColor, paddingHorizontal: 8 },
-                        ]}>
-                        {item}
-                      </Text>
-                      {selectedCity === item && (
-                        <Octicons
-                          name="dot-fill"
-                          color={primaryColor.main}
-                          size={14}
-                          style={[styles.dot, { marginLeft: 'auto' }]}
-                        />
-                      )}
-                    </TouchableOpacity>
-                  )}
-                  contentContainerStyle={styles.cityList}
-                />
-              </>
-            )}
-          </>
-        )}
-      </ScrollView>
-    </View>
+                          styles.cityItem,
+                          {
+                            backgroundColor: inputBackground,
+                            borderColor: borderBottomColor,
+                          },
+                        ]}
+                        onPress={() => handleCitySelection(item)}>
+                        {item ? (
+                          <>
+                            <Image
+                              source={cityImages[item.toLowerCase()]}
+                              style={styles.cityImage}
+                            />
+                            <View style={styles.cityTextContainer}>
+                              <Text style={[styles.cityName, { color: textColor }]}>
+                                {item}
+                              </Text>
+                              {selectedCity === item ? (
+                                <Octicons
+                                  name="dot-fill"
+                                  color={primaryColor.main}
+                                  size={14}
+                                  style={styles.dot}
+                                />
+                              ) : null}
+                            </View>
+                          </>
+                        ) : null}
+                      </TouchableOpacity>
+                    )}
+                    contentContainerStyle={styles.cityGrid}
+                  />
+                </>
+              )}
+              {filteredOtherCities.length > 0 && (
+                <>
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      { color: textColor, paddingHorizontal: 16, marginBottom: 10 },
+                    ]}>
+                    OTHER CITIES
+                  </Text>
+                  <FlatList
+                    data={filteredOtherCities.sort((a, b) => a.localeCompare(b))} // Sort alphabetically
+                    keyExtractor={(item, index) => item + index}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={[
+                          styles.otherCityItem,
+                          {
+                            backgroundColor: inputBackground,
+                            borderColor: borderBottomColor,
+                          },
+                        ]}
+                        onPress={() => handleCitySelection(item)}>
+                        <Text
+                          style={[
+                            styles.cityName,
+                            { color: textColor, paddingHorizontal: 8 },
+                          ]}>
+                          {item}
+                        </Text>
+                        {selectedCity === item && (
+                          <Octicons
+                            name="dot-fill"
+                            color={primaryColor.main}
+                            size={14}
+                            style={[styles.dot, { marginLeft: 'auto' }]}
+                          />
+                        )}
+                      </TouchableOpacity>
+                    )}
+                    contentContainerStyle={styles.cityList}
+                  />
+                </>
+              )}
+            </>
+          )}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
