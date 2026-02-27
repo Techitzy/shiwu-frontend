@@ -23,6 +23,7 @@ import {
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomPlacesAutocomplete from '../../../components/shared/CustomPlacesAutocomplete';
 import ImageGrid from '../../../components/shared/ImageGrid';
 import { EventContext } from '../../../context/EventContext';
@@ -305,7 +306,7 @@ const EditEventScreen = () => {
   if (!event) return <View style={[styles.container, { backgroundColor }]}><Text style={{ color: textColor }}>Loading...</Text></View>;
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: isDarkTheme ? '#333' : '#ddd' }]}>
         <TouchableOpacity onPress={handleGoBack}>
@@ -464,7 +465,7 @@ const EditEventScreen = () => {
           </TouchableOpacity>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
