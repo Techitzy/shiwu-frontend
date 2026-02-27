@@ -1,23 +1,24 @@
-import React, {useContext, useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  useColorScheme,
-} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { Avatar, ActivityIndicator } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
-import {UserContext} from '../../context/UserContext';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
+import { useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from 'react-native';
+import { ActivityIndicator, Avatar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserContext } from '../../context/UserContext';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 // import ContentLoader, {Rect} from 'react-content-loader/native'; // Keep or use ActivityIndicator
 
 const EditProfileScreen = () => {
   const router = useRouter();
-  const {user, uploadProfileImage} = useContext(UserContext);
+  const { user, uploadProfileImage } = useContext(UserContext);
   const colorScheme = useColorScheme();
   const [userImage, setUserImage] = useState(user?.profile_pic);
   const [loading, setLoading] = useState(false);
@@ -74,85 +75,87 @@ const EditProfileScreen = () => {
   };
 
   return (
-    <ScrollView style={[styles.container, {backgroundColor}]}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={26} color={textColor} />
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <ScrollView style={{ flex: 1 }}>
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back-outline" size={26} color={textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: textColor }]}>
+            Edit Profile
+          </Text>
+        </View>
+
+        {/* Avatar */}
+        <View style={styles.avatarContainer}>
+          {loading ? (
+            <View style={[styles.avatar, { width: 100, height: 100, justifyContent: 'center', alignItems: 'center' }]}>
+              <ActivityIndicator color={primaryColor.main} />
+            </View>
+          ) : (
+            <Avatar.Image
+              source={{ uri: userImage }}
+              size={100}
+              style={styles.avatar}
+            />
+          )}
+        </View>
+
+        {/* Edit Picture */}
+        <TouchableOpacity onPress={handleImagePicker}>
+          <Text style={[styles.editPicture, { color: primaryColor.main }]}>
+            Edit picture
+          </Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: textColor}]}>
-          Edit Profile
-        </Text>
-      </View>
 
-      {/* Avatar */}
-      <View style={styles.avatarContainer}>
-        {loading ? (
-          <View style={[styles.avatar, { width: 100, height: 100, justifyContent: 'center', alignItems: 'center' }]}>
-             <ActivityIndicator color={primaryColor.main} />
-          </View>
-        ) : (
-          <Avatar.Image
-            source={{uri: userImage}}
-            size={100}
-            style={styles.avatar}
-          />
-        )}
-      </View>
-
-      {/* Edit Picture */}
-      <TouchableOpacity onPress={handleImagePicker}>
-        <Text style={[styles.editPicture, {color: primaryColor.main}]}>
-          Edit picture
-        </Text>
-      </TouchableOpacity>
-
-      {/* Fields */}
-      <View style={styles.fieldsContainer}>
-        {fields.map((field, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.field,
-              {backgroundColor: inputBackground, borderColor},
-            ]}
-            onPress={() =>
-              router.push({
+        {/* Fields */}
+        <View style={styles.fieldsContainer}>
+          {fields.map((field, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.field,
+                { backgroundColor: inputBackground, borderColor },
+              ]}
+              onPress={() =>
+                router.push({
                   pathname: '/profile/edit-personal-info',
                   params: { label: field.label, value: field.value }
-              })
-            }>
-            <View>
-              {field.value ? (
-                <>
-                  <Text style={[styles.fieldLabel, {color: textColor}]}>
-                    {field.label}
-                  </Text>
+                })
+              }>
+              <View>
+                {field.value ? (
+                  <>
+                    <Text style={[styles.fieldLabel, { color: textColor }]}>
+                      {field.label}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.fieldValue,
+                        field.label === 'Bio' && styles.bioValue,
+                        { color: textColor },
+                      ]}
+                      numberOfLines={field.label === 'Bio' ? 2 : 1}>
+                      {field.value}
+                    </Text>
+                  </>
+                ) : (
                   <Text
                     style={[
                       styles.fieldValue,
                       field.label === 'Bio' && styles.bioValue,
-                      {color: textColor},
-                    ]}
-                    numberOfLines={field.label === 'Bio' ? 2 : 1}>
-                    {field.value}
+                      { color: textColor },
+                    ]}>
+                    {field.label}
                   </Text>
-                </>
-              ) : (
-                <Text
-                  style={[
-                    styles.fieldValue,
-                    field.label === 'Bio' && styles.bioValue,
-                    {color: textColor},
-                  ]}>
-                  {field.label}
-                </Text>
-              )}
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+                )}
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -1,16 +1,17 @@
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, {useState, useEffect, useRef} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   useColorScheme,
+  View,
 } from 'react-native';
-import {ActivityIndicator} from 'react-native-paper';
-import { Ionicons } from '@expo/vector-icons';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
+import { ActivityIndicator } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const VerifyEmailScreen = () => {
   const router = useRouter();
@@ -102,67 +103,69 @@ const VerifyEmailScreen = () => {
   const isVerifyDisabled = otp.some(digit => digit === '') || isLoading;
 
   return (
-    <View style={[styles.container, {backgroundColor: backgroundColor}]}>
-      {/* Custom Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={24} color={textColor} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: textColor}]}>
-          Verify Email
-        </Text>
-      </View>
-
-      <View style={styles.content}>
-        <Text style={[styles.message, {color: textColor}]}>
-          OTP has been sent to <Text style={{fontWeight: 'bold'}}>{email}</Text>
-        </Text>
-
-        <View style={styles.otpContainer}>
-          {otp.map((digit, index) => (
-            <TextInput
-              key={index}
-              ref={ref => (inputRefs.current[index] = ref)}
-              style={[styles.otpInput, { color: textColor, borderColor: isDarkTheme ? '#555' : '#ccc' }]}
-              keyboardType="numeric"
-              maxLength={1}
-              value={digit}
-              onChangeText={value => handleOtpChange(value, index)}
-              onKeyPress={event => handleKeyPress(event, index)}
-            />
-          ))}
+    <SafeAreaView style={[styles.container, { backgroundColor: backgroundColor }]}>
+      <View style={{ flex: 1 }}>
+        {/* Custom Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}>
+            <Ionicons name="arrow-back-outline" size={24} color={textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: textColor }]}>
+            Verify Email
+          </Text>
         </View>
 
-        <TouchableOpacity
-          style={[
-            styles.resendButton,
-            isResendDisabled && styles.resendButtonDisabled,
-          ]}
-          onPress={handleResendOtp}
-          disabled={isResendDisabled}>
-          <Text style={styles.resendText}>
-            {isResendDisabled ? `Resend OTP in ${timer}s` : 'Resend OTP'}
+        <View style={styles.content}>
+          <Text style={[styles.message, { color: textColor }]}>
+            OTP has been sent to <Text style={{ fontWeight: 'bold' }}>{email}</Text>
           </Text>
-        </TouchableOpacity>
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        <TouchableOpacity
-          style={[
-            styles.verifyButton,
-            isVerifyDisabled && styles.verifyButtonDisabled,
-          ]}
-          onPress={handleVerify}
-          disabled={isVerifyDisabled}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.verifyButtonText}>Verify</Text>
-          )}
-        </TouchableOpacity>
+          <View style={styles.otpContainer}>
+            {otp.map((digit, index) => (
+              <TextInput
+                key={index}
+                ref={ref => (inputRefs.current[index] = ref)}
+                style={[styles.otpInput, { color: textColor, borderColor: isDarkTheme ? '#555' : '#ccc' }]}
+                keyboardType="numeric"
+                maxLength={1}
+                value={digit}
+                onChangeText={value => handleOtpChange(value, index)}
+                onKeyPress={event => handleKeyPress(event, index)}
+              />
+            ))}
+          </View>
+
+          <TouchableOpacity
+            style={[
+              styles.resendButton,
+              isResendDisabled && styles.resendButtonDisabled,
+            ]}
+            onPress={handleResendOtp}
+            disabled={isResendDisabled}>
+            <Text style={styles.resendText}>
+              {isResendDisabled ? `Resend OTP in ${timer}s` : 'Resend OTP'}
+            </Text>
+          </TouchableOpacity>
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          <TouchableOpacity
+            style={[
+              styles.verifyButton,
+              isVerifyDisabled && styles.verifyButtonDisabled,
+            ]}
+            onPress={handleVerify}
+            disabled={isVerifyDisabled}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.verifyButtonText}>Verify</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

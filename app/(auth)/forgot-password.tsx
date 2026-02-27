@@ -1,24 +1,25 @@
-import React, {useState, useContext} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Image,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   useColorScheme,
-  Image,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import {UserContext} from '../../context/UserContext';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserContext } from '../../context/UserContext';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const ForgotPasswordScreen = () => {
   const { email: emailParam } = useLocalSearchParams();
   const initialEmail = Array.isArray(emailParam) ? emailParam[0] : emailParam || '';
 
-  const {isEmailExist} = useContext(UserContext);
+  const { isEmailExist, loginWithGoogle } = useContext(UserContext);
   const [email, setEmail] = useState(initialEmail);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -61,72 +62,74 @@ const ForgotPasswordScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: backgroundColor}]}>
-      {/* Custom Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}>
-          <Ionicons name="arrow-back-outline" size={24} color={textColor} />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.content}>
-        <Text style={[styles.findTitle, {color: textColor}]}>
-          Find your account
-        </Text>
-        <Text style={[styles.message, {color: textColor}]}>
-          Enter your email address
-        </Text>
-
-        <TextInput
-          style={[
-            styles.input,
-            {
-              backgroundColor: inputBackground,
-              color: textColor,
-            },
-          ]}
-          placeholder="Email Address"
-          placeholderTextColor={placeHolderText}
-          value={email}
-          onChangeText={text => {
-            setEmail(text);
-            setError('');
-          }}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={handleContinue}
-          disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Continue</Text>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.dividerContainer}>
-          <View style={styles.divider} />
-          <Text style={[styles.orText, {color: textColor}]}>OR</Text>
-          <View style={styles.divider} />
+    <SafeAreaView style={[styles.container, { backgroundColor: backgroundColor }]}>
+      <View style={{ flex: 1 }}>
+        {/* Custom Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}>
+            <Ionicons name="arrow-back-outline" size={24} color={textColor} />
+          </TouchableOpacity>
         </View>
+        <View style={styles.content}>
+          <Text style={[styles.findTitle, { color: textColor }]}>
+            Find your account
+          </Text>
+          <Text style={[styles.message, { color: textColor }]}>
+            Enter your email address
+          </Text>
 
-        <TouchableOpacity style={styles.googleButton}>
-          <View style={styles.googleButtonContent}>
-            <Image
-              source={require('../../public/images/googleLogo.png')}
-              style={styles.googleLogo}
-            />
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: inputBackground,
+                color: textColor,
+              },
+            ]}
+            placeholder="Email Address"
+            placeholderTextColor={placeHolderText}
+            value={email}
+            onChangeText={text => {
+              setEmail(text);
+              setError('');
+            }}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleContinue}
+            disabled={isLoading}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Continue</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.dividerContainer}>
+            <View style={styles.divider} />
+            <Text style={[styles.orText, { color: textColor }]}>OR</Text>
+            <View style={styles.divider} />
           </View>
-        </TouchableOpacity>
+
+          <TouchableOpacity style={styles.googleButton}>
+            <View style={styles.googleButtonContent}>
+              <Image
+                source={require('../../public/images/googleLogo.png')}
+                style={styles.googleLogo}
+              />
+              <Text style={styles.googleButtonText}>Continue with Google</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

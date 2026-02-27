@@ -1,25 +1,26 @@
-import React, {useContext, useState} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useContext, useState } from 'react';
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   useColorScheme,
+  View,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import {UserContext} from '../../context/UserContext';
-import {lightColors, darkColors} from '../../themes/basics';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserContext } from '../../context/UserContext';
+import { darkColors, lightColors } from '../../themes/basics';
 
 const SignUpScreen = () => {
   const { email: emailParam } = useLocalSearchParams();
   const email = Array.isArray(emailParam) ? emailParam[0] : emailParam;
-  
+
   const colorScheme = useColorScheme();
   const router = useRouter();
-  const {signUp} = useContext(UserContext);
+  const { signUp } = useContext(UserContext);
 
   const isDarkTheme = colorScheme === 'dark';
   const backgroundColor = isDarkTheme
@@ -126,156 +127,158 @@ const SignUpScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back-outline" size={24} color={textColor} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: headerTextColor}]}>
-          Sign Up
-        </Text>
-        <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-          <Text style={[styles.cancelButton, {color: headerTextColor}]}>
-            Cancel
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <View style={{ flex: 1 }}>
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <Ionicons name="arrow-back-outline" size={24} color={textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>
+            Sign Up
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
+            <Text style={[styles.cancelButton, { color: headerTextColor }]}>
+              Cancel
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Progress Indicator */}
+        <View style={styles.progressContainer}>
+          {[...Array(4)].map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.progressLine,
+                {
+                  backgroundColor: index < progress ? '#7373FF' : '#ccc',
+                },
+              ]}
+            />
+          ))}
+        </View>
+
+        {/* Main Content */}
+        <View style={styles.content}>
+          {progress === 1 && (
+            <>
+              <Text style={[styles.title, { color: textColor }]}>
+                Let's sign you up!
+              </Text>
+              <Text style={[styles.subtitle, { color: textColor }]}>
+                What is your full name?
+              </Text>
+              <TextInput
+                style={[styles.input, { color: textColor }]}
+                placeholder="Full Name"
+                placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
+                value={fullName}
+                onChangeText={text => {
+                  setFullName(text);
+                  setError('');
+                }}
+              />
+            </>
+          )}
+
+          {progress === 2 && (
+            <>
+              <Text style={[styles.title, { color: textColor }]}>
+                When is your birthday?
+              </Text>
+              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                <TextInput
+                  style={[styles.input, { color: textColor }]}
+                  placeholder="DD/MM/YYYY"
+                  placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
+                  value={birthday ? birthday.toLocaleDateString('en-GB') : ''}
+                  editable={false}
+                />
+              </TouchableOpacity>
+              {showDatePicker && (
+                <DateTimePickerModal
+                  isVisible={showDatePicker}
+                  mode="date"
+                  onConfirm={date => {
+                    handleBirthdayChange(date);
+                    setShowDatePicker(false);
+                  }}
+                  onCancel={() => setShowDatePicker(false)}
+                  maximumDate={new Date()}
+                  minimumDate={new Date('1900-01-01')}
+                />
+              )}
+            </>
+          )}
+
+          {progress === 3 && (
+            <>
+              <Text style={[styles.title, { color: textColor }]}>
+                What is your gender?
+              </Text>
+              <View style={styles.genderContainer}>
+                {['Male', 'Female', 'Other'].map(option => (
+                  <TouchableOpacity
+                    key={option}
+                    onPress={() => setGender(option)}
+                    style={[
+                      styles.genderOption,
+                      gender === option && styles.selectedGenderOption,
+                    ]}>
+                    <Text
+                      style={[
+                        styles.genderText,
+                        gender === option && styles.selectedGenderText,
+                        { color: textColor },
+                      ]}>
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
+
+          {progress === 4 && (
+            <>
+              <Text style={[styles.title, { color: textColor }]}>
+                Create a password
+              </Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, { color: textColor }]}
+                  placeholder="Password"
+                  placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
+                  value={password}
+                  onChangeText={text => {
+                    setPassword(text);
+                    setError('');
+                  }}
+                  secureTextEntry={!isPasswordVisible} // Toggle password visibility
+                />
+                <TouchableOpacity
+                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                  style={styles.eyeIcon}>
+                  <Ionicons
+                    name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                    size={24}
+                    color={textColor}
+                  />
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        </View>
+        <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+          <Text style={styles.buttonText}>
+            {progress < 4 ? 'Continue' : 'Finish'}
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Progress Indicator */}
-      <View style={styles.progressContainer}>
-        {[...Array(4)].map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.progressLine,
-              {
-                backgroundColor: index < progress ? '#7373FF' : '#ccc',
-              },
-            ]}
-          />
-        ))}
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.content}>
-        {progress === 1 && (
-          <>
-            <Text style={[styles.title, {color: textColor}]}>
-              Let's sign you up!
-            </Text>
-            <Text style={[styles.subtitle, {color: textColor}]}>
-              What is your full name?
-            </Text>
-            <TextInput
-              style={[styles.input, {color: textColor}]}
-              placeholder="Full Name"
-              placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
-              value={fullName}
-              onChangeText={text => {
-                setFullName(text);
-                setError('');
-              }}
-            />
-          </>
-        )}
-
-        {progress === 2 && (
-          <>
-            <Text style={[styles.title, {color: textColor}]}>
-              When is your birthday?
-            </Text>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <TextInput
-                style={[styles.input, {color: textColor}]}
-                placeholder="DD/MM/YYYY"
-                placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
-                value={birthday ? birthday.toLocaleDateString('en-GB') : ''}
-                editable={false}
-              />
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePickerModal
-                isVisible={showDatePicker}
-                mode="date"
-                onConfirm={date => {
-                  handleBirthdayChange(date);
-                  setShowDatePicker(false);
-                }}
-                onCancel={() => setShowDatePicker(false)}
-                maximumDate={new Date()}
-                minimumDate={new Date('1900-01-01')}
-              />
-            )}
-          </>
-        )}
-
-        {progress === 3 && (
-          <>
-            <Text style={[styles.title, {color: textColor}]}>
-              What is your gender?
-            </Text>
-            <View style={styles.genderContainer}>
-              {['Male', 'Female', 'Other'].map(option => (
-                <TouchableOpacity
-                  key={option}
-                  onPress={() => setGender(option)}
-                  style={[
-                    styles.genderOption,
-                    gender === option && styles.selectedGenderOption,
-                  ]}>
-                  <Text
-                    style={[
-                      styles.genderText,
-                      gender === option && styles.selectedGenderText,
-                      {color: textColor},
-                    ]}>
-                    {option}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </>
-        )}
-
-        {progress === 4 && (
-          <>
-            <Text style={[styles.title, {color: textColor}]}>
-              Create a password
-            </Text>
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={[styles.input, {color: textColor}]}
-                placeholder="Password"
-                placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
-                value={password}
-                onChangeText={text => {
-                  setPassword(text);
-                  setError('');
-                }}
-                secureTextEntry={!isPasswordVisible} // Toggle password visibility
-              />
-              <TouchableOpacity
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                style={styles.eyeIcon}>
-                <Ionicons
-                  name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                  size={24}
-                  color={textColor}
-                />
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
-
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      </View>
-      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.buttonText}>
-          {progress < 4 ? 'Continue' : 'Finish'}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 

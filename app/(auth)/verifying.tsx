@@ -1,15 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-  View,
-  Text,
   ActivityIndicator,
-  StyleSheet,
-  useColorScheme,
   Image,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  useColorScheme,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const VerifyingScreen = () => {
   const colorScheme = useColorScheme();
@@ -21,35 +22,37 @@ const VerifyingScreen = () => {
   const headerTextColor = isDarkTheme ? '#fff' : '#333';
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
-      {/* Custom Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}>
-          <Ionicons name="arrow-back-outline" size={24} color={textColor} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: headerTextColor}]}>
-          Verifying
-        </Text>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <View style={{ flex: 1 }}>
+        {/* Custom Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}>
+            <Ionicons name="arrow-back-outline" size={24} color={textColor} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>
+            Verifying
+          </Text>
+        </View>
 
-      {/* Main Content */}
-      <View style={styles.content}>
-        <Image
-          source={require('../../public/images/emailSent.png')}
-          style={styles.emailIcon}
-        />
-        <ActivityIndicator size="large" color="#7373FF" style={styles.loader} />
-        <Text style={[styles.message, {color: isDarkTheme ? '#fff' : '#000'}]}>
-          Verifying your email address.
-        </Text>
-        <Text
-          style={[styles.subMessage, {color: isDarkTheme ? '#888' : '#555'}]}>
-          Please wait...
-        </Text>
+        {/* Main Content */}
+        <View style={styles.content}>
+          <Image
+            source={require('../../public/images/emailSent.png')}
+            style={styles.emailIcon}
+          />
+          <ActivityIndicator size="large" color="#7373FF" style={styles.loader} />
+          <Text style={[styles.message, { color: isDarkTheme ? '#fff' : '#000' }]}>
+            Verifying your email address.
+          </Text>
+          <Text
+            style={[styles.subMessage, { color: isDarkTheme ? '#888' : '#555' }]}>
+            Please wait...
+          </Text>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

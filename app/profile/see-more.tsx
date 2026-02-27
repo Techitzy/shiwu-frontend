@@ -1,21 +1,22 @@
-import React, {useState} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
-  View,
-  TextInput,
+  ScrollView,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   useColorScheme,
-  ScrollView,
+  View,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import TrendingEvent from '../../components/shared/home/TrendingEvents';
-import {lightColors, darkColors} from '../../themes/basics';
+import { darkColors, lightColors } from '../../themes/basics';
 
 const SeeMoreScreen = () => {
   const router = useRouter();
   const { events: eventsParam, title: titleParam } = useLocalSearchParams();
-  
+
   const events = eventsParam ? JSON.parse(eventsParam) : [];
   const title = Array.isArray(titleParam) ? titleParam[0] : titleParam || 'Events';
 
@@ -34,26 +35,28 @@ const SeeMoreScreen = () => {
   );
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={26} color={textColor} />
-        </TouchableOpacity>
-        <TextInput
-          style={[styles.searchBar, { color: textColor, borderColor: isDarkTheme ? '#444' : '#ccc' }]}
-          placeholder={`Search ${title}`}
-          placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <View style={{ flex: 1 }}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back-outline" size={26} color={textColor} />
+          </TouchableOpacity>
+          <TextInput
+            style={[styles.searchBar, { color: textColor, borderColor: isDarkTheme ? '#444' : '#ccc' }]}
+            placeholder={`Search ${title}`}
+            placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
 
-      <ScrollView contentContainerStyle={styles.trendingEventsContainer}>
-        {filteredEvents.map(event => (
-          <TrendingEvent key={event.id} event={event} />
-        ))}
-      </ScrollView>
-    </View>
+        <ScrollView contentContainerStyle={styles.trendingEventsContainer}>
+          {filteredEvents.map(event => (
+            <TrendingEvent key={event.id} event={event} />
+          ))}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 

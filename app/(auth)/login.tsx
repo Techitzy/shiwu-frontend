@@ -12,12 +12,13 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { UserContext } from '../../context/UserContext';
 import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const LoginScreen = () => {
-  const { login, isEmailExist } = useContext(UserContext);
+  const { login, isEmailExist, loginWithGoogle } = useContext(UserContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [step, setStep] = useState('email');
@@ -95,119 +96,118 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
-      <Text style={[styles.title, { color: textColor }]}>Yo, Welcome Back!</Text>
-      <Text style={[styles.subtitle, { color: textColor }]}>
-        {step === 'email'
-          ? 'Enter your email to continue'
-          : 'Enter your password to sign in'}
-      </Text>
+    <SafeAreaView style={[styles.container, { backgroundColor: backgroundColor }]}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Text style={[styles.title, { color: textColor }]}>Yo, Welcome Back!</Text>
+        <Text style={[styles.subtitle, { color: textColor }]}>
+          {step === 'email'
+            ? 'Enter your email to continue'
+            : 'Enter your password to sign in'}
+        </Text>
 
-      <TextInput
-        style={[
-          styles.input,
-          {
-            backgroundColor: inputBackground,
-            color: textColor,
-          },
-        ]}
-        placeholder="Email Address"
-        placeholderTextColor={placeHolderText}
-        value={email}
-        onChangeText={text => {
-          setEmail(text);
-          setError('');
-        }}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: inputBackground,
+              color: textColor,
+            },
+          ]}
+          placeholder="Email Address"
+          placeholderTextColor={placeHolderText}
+          value={email}
+          onChangeText={text => {
+            setEmail(text);
+            setError('');
+          }}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-      <Animated.View style={{ opacity, width: '100%' }}>
-        {step === 'password' && (
-          <View>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: inputBackground,
-                  color: textColor,
-                },
-              ]}
-              placeholder="Password"
-              placeholderTextColor={placeHolderText}
-              value={password}
-              onChangeText={text => {
-                setPassword(text);
-                setError('');
-              }}
-              secureTextEntry={!isPasswordVisible}
-            />
-            <TouchableOpacity
-              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-              style={styles.eyeIcon}>
-              <Ionicons
-                name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-                size={24}
-                color={textColor}
+        <Animated.View style={{ opacity, width: '100%' }}>
+          {step === 'password' && (
+            <View>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: inputBackground,
+                    color: textColor,
+                  },
+                ]}
+                placeholder="Password"
+                placeholderTextColor={placeHolderText}
+                value={password}
+                onChangeText={text => {
+                  setPassword(text);
+                  setError('');
+                }}
+                secureTextEntry={!isPasswordVisible}
               />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.forgotPasswordLink}
-              onPress={() =>
-                router.push({ pathname: '/(auth)/forgot-password', params: { email } })
-              }>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </Animated.View>
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                style={styles.eyeIcon}>
+                <Ionicons
+                  name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+                  size={24}
+                  color={textColor}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.forgotPasswordLink}
+                onPress={() =>
+                  router.push({ pathname: '/(auth)/forgot-password', params: { email } })
+                }>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Animated.View>
 
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      <TouchableOpacity
-        style={styles.continueButton}
-        onPress={handleContinue}
-        disabled={isLoading}>
-        {isLoading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>
-            {step === 'email' ? 'Continue' : 'Sign In'}
-          </Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={handleContinue}
+          disabled={isLoading}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>
+              {step === 'email' ? 'Continue' : 'Sign In'}
+            </Text>
+          )}
+        </TouchableOpacity>
 
-      <View style={styles.dividerContainer}>
-        <View style={styles.divider} />
-        <Text style={[styles.orText, { color: textColor }]}>OR</Text>
-        <View style={styles.divider} />
-      </View>
-
-      <TouchableOpacity style={styles.googleButton}>
-        <View style={styles.googleButtonContent}>
-          <Image
-            source={require('../../public/images/googleLogo.png')}
-            style={styles.googleLogo}
-          />
-          <Text style={styles.googleButtonText}>Continue with Google</Text>
+        <View style={styles.dividerContainer}>
+          <View style={styles.divider} />
+          <Text style={[styles.orText, { color: textColor }]}>OR</Text>
+          <View style={styles.divider} />
         </View>
-      </TouchableOpacity>
 
-      <Text style={[styles.agreementText, { color: informationText }]}>
-        By continuing, you agree to our{' '}
-        <Text style={styles.linkText}>Terms of Service</Text> and{' '}
-        <Text style={styles.linkText}>Privacy Policy</Text>.
-      </Text>
-    </View>
+        <TouchableOpacity style={styles.googleButton}>
+          <View style={styles.googleButtonContent}>
+            <Image
+              source={require('../../public/images/googleLogo.png')}
+              style={styles.googleLogo}
+            />
+            <Text style={styles.googleButtonText}>Continue with Google</Text>
+          </View>
+        </TouchableOpacity>
+
+        <Text style={[styles.agreementText, { color: informationText }]}>
+          By continuing, you agree to our{' '}
+          <Text style={styles.linkText}>Terms of Service</Text> and{' '}
+          <Text style={styles.linkText}>Privacy Policy</Text>.
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
   },
   title: {
     fontSize: 24,

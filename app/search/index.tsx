@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   useColorScheme,
-  ScrollView,
+  View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import TrendingEvent from '../../components/shared/home/TrendingEvents';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SearchScreen = () => {
   const [eventsData, setEventsData] = useState([]);
@@ -50,9 +51,9 @@ const SearchScreen = () => {
           banner_img:
             'https://www.eventbrite.com/blog/wp-content/uploads/2023/02/aditya-chinchure-ZhQCZjr9fHo-unsplash-768x576.jpg',
           meta: {
-              area: 'Manhattan',
-              price: 500,
-              restrictions: { max_participants: 20 }
+            area: 'Manhattan',
+            price: 500,
+            restrictions: { max_participants: 20 }
           }
         },
         {
@@ -67,11 +68,11 @@ const SearchScreen = () => {
           address: '456 Sunset Blvd',
           banner_img:
             'https://thumbs.dreamstime.com/b/merry-christmas-happy-new-year-greeting-banner-template-penguin-design-232657123.jpg',
-            meta: {
-                area: 'Hollywood',
-                price: 1000,
-                restrictions: { max_participants: 50 }
-            }
+          meta: {
+            area: 'Hollywood',
+            price: 1000,
+            restrictions: { max_participants: 50 }
+          }
         },
         // Add other events here...
       ];
@@ -116,7 +117,7 @@ const SearchScreen = () => {
     );
     setRecentSearches(recentSearches);
     setShowRecentSearches(false);
-    
+
     // Navigate to details
     // router.push({ pathname: '/event/[id]', params: { id: event.id, event: JSON.stringify(event) } });
     // TrendingEvent component handles navigation internally, so we don't need to navigate here if we pass onClick prop? 
@@ -128,13 +129,13 @@ const SearchScreen = () => {
     // It IGNORED the `onClick` prop.
     // My migrated TrendingEvent also ignores `onClick`.
     // So handleEventClick here is just for updating recent searches.
-    
+
     // But wait, if TrendingEvent navigates, we can't intercept the click easily unless we modify TrendingEvent to accept an onPress override or we wrap it.
     // However, the original code had:
     // <TrendingEvent key={event.id} event={event} onClick={() => handleEventClick(event)} />
     // This implies the developer INTENDED for handleEventClick to run.
     // I should update TrendingEvent to call `onClick` if provided, OR run this logic here.
-    
+
     // Since I can't easily change TrendingEvent right now without another write, I'll assume standard navigation for now.
     // Actually, I should probably update TrendingEvent to accept an `onPress` prop.
     // But for this migration, I'll rely on TrendingEvent's internal navigation.
@@ -153,101 +154,103 @@ const SearchScreen = () => {
   }, []);
 
   return (
-    <ScrollView
-      style={[styles.container, {backgroundColor}]}
-      contentContainerStyle={{flexGrow: 1}}
-      showsVerticalScrollIndicator={false}>
-      <View style={[{backgroundColor}]}>
-        <View style={[styles.header, {backgroundColor}]}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={headerTextColor} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, {color: headerTextColor}]}>
-            Search
-          </Text>
-        </View>
-
-        <View
-          style={[
-            styles.searchContainer,
-            {
-              backgroundColor: searchBackgroundColor,
-              borderRadius: 8,
-              borderColor: searchBorderColor,
-              borderWidth: 1,
-            },
-          ]}>
-          <View style={styles.searchIconContainer}>
-            <Ionicons name="search" size={20} color={inputTextColor} />
-          </View>
-          <TextInput
-            placeholder="Search..."
-            placeholderTextColor={placeholderTextColor}
-            style={[styles.searchInput, {color: inputTextColor}]}
-            value={searchQuery}
-            onChangeText={handleSearch}
-          />
-          <TouchableOpacity
-            style={[
-              styles.filterIconContainer,
-              {backgroundColor: filterIconBackgroundColor},
-            ]}
-            onPress={() => router.push('/search/filter')}>
-            <Ionicons name="filter" size={20} color={filterIconColor} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Conditionally show Recent Searches section */}
-        {showRecentSearches && recentSearches.length > 0 && (
-          <View style={styles.recentSearchesContainer}>
-            <Text
-              style={[
-                styles.recentSearchesTitle,
-                {color: isDarkMode ? '#fff' : '#000'},
-              ]}>
-              Recent Searches
+    <SafeAreaView style={[{ flex: 1, backgroundColor }]}>
+      <ScrollView
+        style={[styles.container, { backgroundColor }]}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}>
+        <View style={[{ backgroundColor }]}>
+          <View style={[styles.header, { backgroundColor }]}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={headerTextColor} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: headerTextColor }]}>
+              Search
             </Text>
-            {recentSearches.map(event => (
-              <TouchableOpacity
-                key={event.id}
-                onPress={() => {
-                   // Navigate
-                   router.push({
-                    pathname: `/event/${event.id}`,
-                    params: { event: JSON.stringify(event) }
-                  });
-                }}
-                style={styles.recentSearchItem}>
-                <Text style={{color: isDarkMode ? '#fff' : '#000'}}>
-                  {event.name || event.title}
-                </Text>
-              </TouchableOpacity>
-            ))}
           </View>
-        )}
 
-        {/* Display filtered events based on search query */}
-        <View style={styles.trendingEventsContainer}>
-          {filteredEvents.length > 0 && (
-            <>
+          <View
+            style={[
+              styles.searchContainer,
+              {
+                backgroundColor: searchBackgroundColor,
+                borderRadius: 8,
+                borderColor: searchBorderColor,
+                borderWidth: 1,
+              },
+            ]}>
+            <View style={styles.searchIconContainer}>
+              <Ionicons name="search" size={20} color={inputTextColor} />
+            </View>
+            <TextInput
+              placeholder="Search..."
+              placeholderTextColor={placeholderTextColor}
+              style={[styles.searchInput, { color: inputTextColor }]}
+              value={searchQuery}
+              onChangeText={handleSearch}
+            />
+            <TouchableOpacity
+              style={[
+                styles.filterIconContainer,
+                { backgroundColor: filterIconBackgroundColor },
+              ]}
+              onPress={() => router.push('/search/filter')}>
+              <Ionicons name="filter" size={20} color={filterIconColor} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Conditionally show Recent Searches section */}
+          {showRecentSearches && recentSearches.length > 0 && (
+            <View style={styles.recentSearchesContainer}>
               <Text
                 style={[
-                  styles.trendingTitle,
-                  {color: isDarkMode ? '#fff' : '#000'},
+                  styles.recentSearchesTitle,
+                  { color: isDarkMode ? '#fff' : '#000' },
                 ]}>
-                Matching Events
+                Recent Searches
               </Text>
-              {filteredEvents.map(event => (
-                <TrendingEvent
+              {recentSearches.map(event => (
+                <TouchableOpacity
                   key={event.id}
-                  event={event}
-                />
+                  onPress={() => {
+                    // Navigate
+                    router.push({
+                      pathname: `/event/${event.id}`,
+                      params: { event: JSON.stringify(event) }
+                    });
+                  }}
+                  style={styles.recentSearchItem}>
+                  <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>
+                    {event.name || event.title}
+                  </Text>
+                </TouchableOpacity>
               ))}
-            </>
+            </View>
           )}
+
+          {/* Display filtered events based on search query */}
+          <View style={styles.trendingEventsContainer}>
+            {filteredEvents.length > 0 && (
+              <>
+                <Text
+                  style={[
+                    styles.trendingTitle,
+                    { color: isDarkMode ? '#fff' : '#000' },
+                  ]}>
+                  Matching Events
+                </Text>
+                {filteredEvents.map(event => (
+                  <TrendingEvent
+                    key={event.id}
+                    event={event}
+                  />
+                ))}
+              </>
+            )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

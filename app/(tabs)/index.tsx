@@ -9,6 +9,7 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import TrendingEvent from '../../components/shared/home/TrendingEvents';
 import { EventContext } from '../../context/EventContext';
@@ -64,92 +65,94 @@ const HomeScreen = () => {
   const dynamicStyles = styles(theme);
 
   return (
-    <ScrollView
-      style={dynamicStyles.container}
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}>
-      <View style={dynamicStyles.tabContainer}>
-        {loading ? (
-          // <SkeletonTabLoader theme={theme} />
-          <></>
-        ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={dynamicStyles.horizontalContainer}>
-            {tabs.map((tab, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setActiveTab(tab.label)}
-                style={dynamicStyles.tab}>
-                {activeTab === tab.label ? (
-                  <View
-                    style={[
-                      dynamicStyles.activeTab,
-                      { backgroundColor: primaryColor.main },
-                    ]}>
-                    <Text style={dynamicStyles.activeTabText}>{tab.label}</Text>
-                  </View>
-                ) : (
-                  <Text style={dynamicStyles.tabText}>{tab.label}</Text>
-                )}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        )}
-      </View>
-      {eventsLoading ? (
-        // <SkeletonEventLoader theme={theme} />
-        <></>
-      ) : getFilteredEvents().length > 0 ? (
-        <View style={dynamicStyles.trendingEventsContainer}>
-          <Text style={[dynamicStyles.trendingTitle, { color: textColor }]}>
-            {getFilteredEvents().length} EVENTS IN YOUR AREA
-          </Text>
-
-          {getFilteredEvents()
-            .slice(0, 10)
-            .map(event => (
-              <TrendingEvent key={event.id} event={event} />
-            ))}
-          {getFilteredEvents().length > 10 && (
-            <TouchableOpacity
-              onPress={() => router.push('/search')}>
-              <View style={dynamicStyles.seeAllEventsContainer}>
-                <Text
-                  style={[
-                    dynamicStyles.seeAllEventsText,
-                    { color: primaryColor.main },
-                  ]}>
-                  See All Events
-                </Text>
-                <Ionicons
-                  name="arrow-forward"
-                  size={24}
-                  color={primaryColor.main}
-                />
-              </View>
-            </TouchableOpacity>
+    <SafeAreaView style={dynamicStyles.safeArea} edges={['top']}>
+      <ScrollView
+        style={dynamicStyles.container}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}>
+        <View style={dynamicStyles.tabContainer}>
+          {loading ? (
+            // <SkeletonTabLoader theme={theme} />
+            <></>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={dynamicStyles.horizontalContainer}>
+              {tabs.map((tab, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setActiveTab(tab.label)}
+                  style={dynamicStyles.tab}>
+                  {activeTab === tab.label ? (
+                    <View
+                      style={[
+                        dynamicStyles.activeTab,
+                        { backgroundColor: primaryColor.main },
+                      ]}>
+                      <Text style={dynamicStyles.activeTabText}>{tab.label}</Text>
+                    </View>
+                  ) : (
+                    <Text style={dynamicStyles.tabText}>{tab.label}</Text>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           )}
         </View>
-      ) : (
-        <View style={dynamicStyles.noEventsContainer}>
-          <TouchableOpacity
-            style={dynamicStyles.searchIconContainer}
-            onPress={() => router.push('/search')}>
-            <Ionicons
-              name="search-outline"
-              size={24}
-              color={primaryColor.main}
-            />
-          </TouchableOpacity>
-          <Text style={dynamicStyles.noEventsText}>No Events Found</Text>
-          <Text style={dynamicStyles.noEventsDescription}>
-            We couldn't find any event with current filters
-          </Text>
-        </View>
-      )}
-    </ScrollView>
+        {eventsLoading ? (
+          // <SkeletonEventLoader theme={theme} />
+          <></>
+        ) : getFilteredEvents().length > 0 ? (
+          <View style={dynamicStyles.trendingEventsContainer}>
+            <Text style={[dynamicStyles.trendingTitle, { color: textColor }]}>
+              {getFilteredEvents().length} EVENTS IN YOUR AREA
+            </Text>
+
+            {getFilteredEvents()
+              .slice(0, 10)
+              .map(event => (
+                <TrendingEvent key={event.id} event={event} />
+              ))}
+            {getFilteredEvents().length > 10 && (
+              <TouchableOpacity
+                onPress={() => router.push('/search')}>
+                <View style={dynamicStyles.seeAllEventsContainer}>
+                  <Text
+                    style={[
+                      dynamicStyles.seeAllEventsText,
+                      { color: primaryColor.main },
+                    ]}>
+                    See All Events
+                  </Text>
+                  <Ionicons
+                    name="arrow-forward"
+                    size={24}
+                    color={primaryColor.main}
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+        ) : (
+          <View style={dynamicStyles.noEventsContainer}>
+            <TouchableOpacity
+              style={dynamicStyles.searchIconContainer}
+              onPress={() => router.push('/search')}>
+              <Ionicons
+                name="search-outline"
+                size={24}
+                color={primaryColor.main}
+              />
+            </TouchableOpacity>
+            <Text style={dynamicStyles.noEventsText}>No Events Found</Text>
+            <Text style={dynamicStyles.noEventsDescription}>
+              We couldn't find any event with current filters
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -157,6 +160,10 @@ export default HomeScreen;
 
 const styles = theme =>
   StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: theme === 'dark' ? '#121212' : '#fff',
+    },
     container: {
       paddingHorizontal: 5,
       paddingTop: 10,

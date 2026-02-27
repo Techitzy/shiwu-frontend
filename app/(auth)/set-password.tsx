@@ -1,16 +1,17 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   useColorScheme,
-  ActivityIndicator,
+  View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const SetPasswordScreen = () => {
   const router = useRouter();
@@ -52,56 +53,58 @@ const SetPasswordScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: backgroundColor}]}>
-      {/* Custom Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}>
-          <Ionicons name="arrow-back-outline" size={24} color={textColor} />
-        </TouchableOpacity>
+    <SafeAreaView style={[styles.container, { backgroundColor: backgroundColor }]}>
+      <View style={{ flex: 1 }}>
+        {/* Custom Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}>
+            <Ionicons name="arrow-back-outline" size={24} color={textColor} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.content}>
+          <Text style={[styles.findTitle, { color: textColor }]}>
+            Create a new password
+          </Text>
+          <Text style={[styles.message, { color: textColor }]}>
+            Create a password with atleast 6 letters and numbers. You'll need this
+            password to login to your account.
+          </Text>
+
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: inputBackground,
+                color: textColor,
+              },
+            ]}
+            placeholder="New Password"
+            placeholderTextColor={placeHolderText}
+            value={password}
+            onChangeText={text => {
+              setPassword(text);
+              setError('');
+            }}
+            secureTextEntry={!showPassword}
+          />
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleUpdatePassword}
+            disabled={isLoading}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Update Password</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.content}>
-        <Text style={[styles.findTitle, {color: textColor}]}>
-          Create a new password
-        </Text>
-        <Text style={[styles.message, {color: textColor}]}>
-          Create a password with atleast 6 letters and numbers. You'll need this
-          password to login to your account.
-        </Text>
-
-        <TextInput
-          style={[
-            styles.input,
-            {
-              backgroundColor: inputBackground,
-              color: textColor,
-            },
-          ]}
-          placeholder="New Password"
-          placeholderTextColor={placeHolderText}
-          value={password}
-          onChangeText={text => {
-            setPassword(text);
-            setError('');
-          }}
-          secureTextEntry={!showPassword}
-        />
-
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={handleUpdatePassword}
-          disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Update Password</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
