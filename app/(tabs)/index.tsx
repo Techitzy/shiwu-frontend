@@ -10,6 +10,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomHeader from '../../components/shared/CustomHeader';
 
 import TrendingEvent from '../../components/shared/home/TrendingEvents';
 import { EventContext } from '../../context/EventContext';
@@ -66,6 +67,7 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={dynamicStyles.safeArea} edges={['top']}>
+      <CustomHeader />
       <ScrollView
         style={dynamicStyles.container}
         contentContainerStyle={{ flexGrow: 1 }}

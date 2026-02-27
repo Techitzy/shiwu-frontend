@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useContext } from 'react';
 import { Text, TouchableOpacity, useColorScheme, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../../context/UserContext';
 
 const CustomHeader = () => {
@@ -13,47 +12,45 @@ const CustomHeader = () => {
   const location = user?.location || 'Select Location';
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.headerContainer}>
-        <View style={styles.greetingContainer}>
-          <Text style={styles.greetingText}>Hi, {user?.full_name || 'Guest'}</Text>
-          <View style={styles.locationContainer}>
-            <TouchableOpacity
-              onPress={() => router.push('/location/select')}
-              style={styles.locationButton}>
-              <Ionicons
-                name="location-outline"
-                size={16}
-                color={styles.iconColor}
-              />
-              <Text style={styles.locationText}>{location}</Text>
-              <Ionicons
-                style={styles.forwardIcon}
-                name="chevron-forward"
-                size={10}
-                color={styles.iconColor}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => router.push('/notification')}>
+    <View style={styles.headerContainer}>
+      <View style={styles.greetingContainer}>
+        <Text style={styles.greetingText}>Hi, {user?.full_name || 'Guest'}</Text>
+        <View style={styles.locationContainer}>
+          <TouchableOpacity
+            onPress={() => router.push('/location/select')}
+            style={styles.locationButton}>
             <Ionicons
-              name="notifications-outline"
-              size={24}
+              name="location-outline"
+              size={16}
               color={styles.iconColor}
             />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => router.push('/search')}>
+            <Text style={styles.locationText}>{location}</Text>
             <Ionicons
-              name="search-outline"
-              size={24}
+              style={styles.forwardIcon}
+              name="chevron-forward"
+              size={10}
               color={styles.iconColor}
             />
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+      <View style={styles.iconContainer}>
+        <TouchableOpacity onPress={() => router.push('/notification')}>
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color={styles.iconColor}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity style={{ marginLeft: 15 }} onPress={() => router.push('/search')}>
+          <Ionicons
+            name="search-outline"
+            size={24}
+            color={styles.iconColor}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 

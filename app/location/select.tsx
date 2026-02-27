@@ -125,7 +125,7 @@ const SelectLocationScreen = () => {
   console.log('selected City', selectedCity);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor }]}>
       <View style={[styles.container, { backgroundColor }]}>
         {/* Header */}
         <View style={styles.headerContainer}>

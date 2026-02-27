@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'react-native';
-import CustomHeader from '../../components/shared/CustomHeader';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -20,7 +19,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          header: () => <CustomHeader />,
+          headerShown: false,
           tabBarIcon: ({ color }) => <Ionicons name="home-outline" size={24} color={color} />,
         }}
       />

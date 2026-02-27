@@ -115,7 +115,7 @@ const EditPersonalInfoScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor }]}>
       <View style={[styles.container, { backgroundColor }]}>
         {/* Header */}
         <View style={styles.headerContainer}>

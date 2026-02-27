@@ -40,7 +40,7 @@ const ApproveRequestScreen = () => {
   const informationText = '#333';
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor }]}>
       <View style={[styles.container, { backgroundColor }]}>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={() => router.back()}>

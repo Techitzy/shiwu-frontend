@@ -31,7 +31,7 @@ const SearchFilterScreen = () => {
   todayAtMidnight.setHours(0, 0, 0, 0);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
       <ScrollView
         style={[
           styles.container,

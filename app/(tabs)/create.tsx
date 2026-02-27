@@ -429,7 +429,7 @@ const CreateEventScreen = () => {
   }, [handleGoBack]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor }]}>
       <View style={[styles.container, { backgroundColor }]}>
         {/* Header */}
         <View
@@ -1004,7 +1004,7 @@ const CreateEventScreen = () => {
           )}
         </View>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 
