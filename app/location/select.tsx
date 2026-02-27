@@ -1,28 +1,28 @@
-import React, {useState, useContext, useRef} from 'react';
+import { Ionicons, MaterialIcons, Octicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useContext, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  TextInput,
+  Alert,
   FlatList,
   Image,
-  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  useColorScheme,
+  View,
 } from 'react-native';
-import { Ionicons, MaterialIcons, Octicons } from '@expo/vector-icons';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import {useColorScheme} from 'react-native';
-import {UserContext} from '../../context/UserContext';
-import {lightColors, darkColors, primaryColor} from '../../themes/basics';
+import { UserContext } from '../../context/UserContext';
+import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const SelectLocationScreen = () => {
   const { location: locationParam } = useLocalSearchParams();
   const location = Array.isArray(locationParam) ? locationParam[0] : locationParam || 'Select Location';
 
   const router = useRouter();
-  const {setTheme, updateUserLocation} = useContext(UserContext);
-  const {logout} = useContext(UserContext);
+  const { setTheme, updateUserLocation } = useContext(UserContext);
+  const { logout } = useContext(UserContext);
   const colorScheme = useColorScheme();
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [selectedCity, setSelectedCity] = useState(location); // Single city selection
@@ -118,19 +118,19 @@ const SelectLocationScreen = () => {
   };
 
   const handleBackToTop = () => {
-    scrollViewRef.current?.scrollTo({y: 0, animated: true});
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   console.log('selected City', selectedCity);
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
+    <View style={[styles.container, { backgroundColor }]}>
       {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back-outline" size={26} color={textColor} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: textColor}]}>{location}</Text>
+        <Text style={[styles.headerTitle, { color: textColor }]}>{location}</Text>
       </View>
 
       <View
@@ -140,10 +140,10 @@ const SelectLocationScreen = () => {
           paddingBottom: 10,
         }}>
         {/* Search Bar */}
-        <View style={[styles.searchBar, {backgroundColor: inputBackground}]}>
+        <View style={[styles.searchBar, { backgroundColor: inputBackground }]}>
           <MaterialIcons name="search" size={20} color={textColor} />
           <TextInput
-            style={[styles.searchInput, {color: textColor}]}
+            style={[styles.searchInput, { color: textColor }]}
             placeholder="Search for your city"
             placeholderTextColor={isDarkTheme ? '#aaa' : '#888'}
             value={searchText}
@@ -171,7 +171,7 @@ const SelectLocationScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}>
         {noResults ? (
-          <Text style={[styles.noResults, {color: textColor}]}>
+          <Text style={[styles.noResults, { color: textColor }]}>
             We could not find any results. Please try searching some other
             terms.
           </Text>
@@ -179,7 +179,7 @@ const SelectLocationScreen = () => {
           <>
             {/* Auto Detect Location */}
             <View
-              style={{paddingHorizontal: 16, backgroundColor: inputBackground}}>
+              style={{ paddingHorizontal: 16, backgroundColor: inputBackground }}>
               <View style={styles.autoDetectContainer}>
                 <Ionicons
                   name="locate-outline"
@@ -187,7 +187,7 @@ const SelectLocationScreen = () => {
                   color={primaryColor.main}
                 />
                 <Text
-                  style={[styles.autoDetectText, {color: primaryColor.main}]}>
+                  style={[styles.autoDetectText, { color: primaryColor.main }]}>
                   Auto Detect My Location
                 </Text>
               </View>
@@ -199,7 +199,7 @@ const SelectLocationScreen = () => {
                 <Text
                   style={[
                     styles.sectionTitle,
-                    {color: textColor, paddingHorizontal: 16},
+                    { color: textColor, paddingHorizontal: 16 },
                   ]}>
                   POPULAR CITIES
                 </Text>
@@ -207,7 +207,7 @@ const SelectLocationScreen = () => {
                   data={filteredPopularCities}
                   numColumns={4}
                   keyExtractor={(item, index) => item + index}
-                  renderItem={({item}) => (
+                  renderItem={({ item }) => (
                     <TouchableOpacity
                       style={[
                         styles.cityItem,
@@ -224,7 +224,7 @@ const SelectLocationScreen = () => {
                             style={styles.cityImage}
                           />
                           <View style={styles.cityTextContainer}>
-                            <Text style={[styles.cityName, {color: textColor}]}>
+                            <Text style={[styles.cityName, { color: textColor }]}>
                               {item}
                             </Text>
                             {selectedCity === item ? (
@@ -249,14 +249,14 @@ const SelectLocationScreen = () => {
                 <Text
                   style={[
                     styles.sectionTitle,
-                    {color: textColor, paddingHorizontal: 16, marginBottom: 10},
+                    { color: textColor, paddingHorizontal: 16, marginBottom: 10 },
                   ]}>
                   OTHER CITIES
                 </Text>
                 <FlatList
                   data={filteredOtherCities.sort((a, b) => a.localeCompare(b))} // Sort alphabetically
                   keyExtractor={(item, index) => item + index}
-                  renderItem={({item}) => (
+                  renderItem={({ item }) => (
                     <TouchableOpacity
                       style={[
                         styles.otherCityItem,
@@ -269,7 +269,7 @@ const SelectLocationScreen = () => {
                       <Text
                         style={[
                           styles.cityName,
-                          {color: textColor, paddingHorizontal: 8},
+                          { color: textColor, paddingHorizontal: 8 },
                         ]}>
                         {item}
                       </Text>
@@ -278,7 +278,7 @@ const SelectLocationScreen = () => {
                           name="dot-fill"
                           color={primaryColor.main}
                           size={14}
-                          style={[styles.dot, {marginLeft: 'auto'}]}
+                          style={[styles.dot, { marginLeft: 'auto' }]}
                         />
                       )}
                     </TouchableOpacity>

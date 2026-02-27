@@ -1,7 +1,7 @@
-import React from 'react';
-import AppIntroSlider from 'react-native-app-intro-slider';
-import {View, Text, ImageBackground, StyleSheet} from 'react-native';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import AppIntroSlider from 'react-native-app-intro-slider';
 
 // Background image for all slides
 const backgroundImage = require('../../public/images/onboarding1.jpg');
@@ -41,7 +41,7 @@ const WalkthroughScreen = () => {
   const router = useRouter();
   return (
     <AppIntroSlider
-      renderItem={({item}) => (
+      renderItem={({ item }) => (
         <ImageBackground source={backgroundImage} style={styles.background}>
           <View style={[styles.slide]}>
             <Text style={styles.title}>{item.title}</Text>

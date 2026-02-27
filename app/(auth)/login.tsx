@@ -18,7 +18,7 @@ import { UserContext } from '../../context/UserContext';
 import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
 const LoginScreen = () => {
-  const { login, isEmailExist, loginWithGoogle } = useContext(UserContext);
+  const { login, isEmailExist } = useContext(UserContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [step, setStep] = useState('email');

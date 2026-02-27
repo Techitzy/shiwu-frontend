@@ -1,18 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import * as Google from 'expo-auth-session/providers/google';
 import * as Location from 'expo-location';
-import * as WebBrowser from 'expo-web-browser';
 import React, { createContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, View } from 'react-native';
-
-// ─── GOOGLE OAUTH ─────────────────────────────────────────────────────────────
-// Replace this with your Web Client ID from the Google Cloud Console.
-// Path: APIs & Services → Credentials → OAuth 2.0 Client IDs → Web client
-const GOOGLE_WEB_CLIENT_ID = 'YOUR_GOOGLE_WEB_CLIENT_ID_HERE';
-
-// Complete auth sessions when the browser redirects back to the app
-WebBrowser.maybeCompleteAuthSession();
+import { ActivityIndicator, View } from 'react-native';
 
 export const UserContext = createContext();
 
@@ -20,24 +10,6 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessToken] = useState(null);
-
-  // ─── Google Auth Request ──────────────────────────────────────────────────
-  const [googleRequest, googleResponse, googlePromptAsync] = Google.useAuthRequest({
-    webClientId: GOOGLE_WEB_CLIENT_ID,
-    // Add androidClientId and iosClientId here if you have them:
-    // androidClientId: 'YOUR_ANDROID_CLIENT_ID',
-    // iosClientId: 'YOUR_IOS_CLIENT_ID',
-  });
-
-  // Handle Google OAuth response
-  useEffect(() => {
-    if (googleResponse?.type === 'success') {
-      const { authentication } = googleResponse;
-      if (authentication?.accessToken) {
-        handleGoogleToken(authentication.accessToken);
-      }
-    }
-  }, [googleResponse]);
 
   // Check if the user is logged in by fetching from AsyncStorage
   useEffect(() => {
@@ -171,66 +143,6 @@ export const UserProvider = ({ children }) => {
     }
 
     return false;
-  };
-
-  // ─── Google Login ─────────────────────────────────────────────────────────
-  /**
-   * Called after a successful Google OAuth flow with the Google access token.
-   * Fetches the user profile from Google, then tries to log in or register
-   * via the backend Google endpoint.
-   *
-   * TODO: Update the backend URL below to match your actual google-login endpoint.
-   */
-  const handleGoogleToken = async (googleAccessToken) => {
-    try {
-      // 1. Get Google user profile
-      const googleUserRes = await fetch(
-        'https://www.googleapis.com/userinfo/v2/me',
-        { headers: { Authorization: `Bearer ${googleAccessToken}` } },
-      );
-      const googleUser = await googleUserRes.json();
-      const { email, name, picture, id: googleId } = googleUser;
-
-      // 2. Send to your backend (update URL/payload to match your API)
-      const response = await axios.post(
-        'https://shivoo-backend.onrender.com/user_auth/google-login',
-        { email, full_name: name, profile_pic: picture, google_id: googleId },
-      );
-
-      if (response.status === 200 && response.data) {
-        const backendAccessToken = response.data.access_token;
-        const userDetails = response.data.user ?? {
-          email,
-          full_name: name,
-          profile_pic: picture,
-        };
-        const userData = { ...userDetails, accessToken: backendAccessToken };
-
-        await AsyncStorage.setItem('userDetails', JSON.stringify(userData));
-        await AsyncStorage.setItem('accessToken', JSON.stringify(backendAccessToken));
-        setUser(userData);
-        setAccessToken(backendAccessToken);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${backendAccessToken}`;
-      } else {
-        Alert.alert('Google Login', 'Failed to authenticate with the server.');
-      }
-    } catch (error) {
-      console.error('[UserContext] Google login error:', error.response?.data || error.message);
-      Alert.alert('Google Login Error', error.response?.data?.detail || 'Something went wrong.');
-    }
-  };
-
-  /**
-   * Trigger the Google OAuth browser flow.
-   * Import { useContext } from 'react'; const { googlePromptAsync } = useContext(UserContext);
-   * Then call: googlePromptAsync();
-   */
-  const loginWithGoogle = async () => {
-    if (!googleRequest) {
-      Alert.alert('Google Login', 'Google sign-in is not ready yet. Please try again.');
-      return;
-    }
-    await googlePromptAsync();
   };
 
   const logout = async () => {
@@ -432,8 +344,6 @@ export const UserProvider = ({ children }) => {
         signUp,
         updateUserLocation,
         uploadProfileImage,
-        loginWithGoogle,
-        googlePromptAsync,
       }}>
       {children}
     </UserContext.Provider>

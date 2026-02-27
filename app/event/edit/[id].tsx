@@ -1,3 +1,5 @@
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, {
   useCallback,
   useContext,
@@ -5,31 +7,27 @@ import React, {
   useState,
 } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Animated,
+  FlatList,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
-  Switch,
-  StyleSheet,
-  useColorScheme,
-  FlatList,
-  ScrollView,
-  Animated,
-  ActivityIndicator,
   TouchableWithoutFeedback,
-  Keyboard,
-  BackHandler,
+  useColorScheme,
+  View
 } from 'react-native';
-import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import DatePicker from 'react-native-date-picker';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import {EventContext} from '../../../context/EventContext';
-import DiscardChangesModal from '../../../components/shared/modals/DiscardChangesModal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CustomPlacesAutocomplete from '../../../components/shared/CustomPlacesAutocomplete';
-import {primaryColor} from '../../../themes/basics';
-// import SkeletonCategoryLoader from '../../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
 import ImageGrid from '../../../components/shared/ImageGrid';
+import { EventContext } from '../../../context/EventContext';
+import { primaryColor } from '../../../themes/basics';
+// import SkeletonCategoryLoader from '../../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
 
 const getNextClosest30Minutes = () => {
   const now = new Date();
@@ -102,32 +100,32 @@ const EditEventScreen = () => {
 
   useEffect(() => {
     if (event?.meta?.images) {
-        const initialImages = event.meta.images.map(img => ({
-          uri: img.url,
-          fileName: img.fileName,
-          sequence: img.sequence,
-        }));
-        setImages(initialImages);
+      const initialImages = event.meta.images.map(img => ({
+        uri: img.url,
+        fileName: img.fileName,
+        sequence: img.sequence,
+      }));
+      setImages(initialImages);
     }
   }, [event?.meta?.images]);
 
   useEffect(() => {
     if (event?.categories) {
-        const updatedCategories = categories.map(cat => ({
-          ...cat,
-          selected: event.categories.some(ec => ec.id === cat.id),
-        }));
-        setCategories(updatedCategories);
+      const updatedCategories = categories.map(cat => ({
+        ...cat,
+        selected: event.categories.some(ec => ec.id === cat.id),
+      }));
+      setCategories(updatedCategories);
     }
   }, [event?.categories?.length]);
 
   useEffect(() => {
     if (event?.amenities) {
-        const updatedAmenities = amenities.map(cat => ({
-          ...cat,
-          selected: event.amenities.some(ec => ec.id === cat.id),
-        }));
-        setAmenities(updatedAmenities);
+      const updatedAmenities = amenities.map(cat => ({
+        ...cat,
+        selected: event.amenities.some(ec => ec.id === cat.id),
+      }));
+      setAmenities(updatedAmenities);
     }
   }, [event?.amenities?.length]);
 
@@ -190,9 +188,9 @@ const EditEventScreen = () => {
     const updatedCategories = categories.map(cat => {
       if (cat.id === categoryId) {
         if (!cat.selected && currentSelectedCount < 3) {
-          return {...cat, selected: true};
+          return { ...cat, selected: true };
         } else if (cat.selected) {
-          return {...cat, selected: false};
+          return { ...cat, selected: false };
         }
       }
       return cat;
@@ -207,7 +205,7 @@ const EditEventScreen = () => {
   const toggleAmenity = id => {
     setAmenities(prev =>
       prev.map(amenity =>
-        amenity.id === id ? {...amenity, selected: !amenity.selected} : amenity,
+        amenity.id === id ? { ...amenity, selected: !amenity.selected } : amenity,
       ),
     );
   };
@@ -304,33 +302,33 @@ const EditEventScreen = () => {
     setIsDropdownVisible(false);
   };
 
-  if (!event) return <View style={[styles.container, {backgroundColor}]}><Text style={{color: textColor}}>Loading...</Text></View>;
+  if (!event) return <View style={[styles.container, { backgroundColor }]}><Text style={{ color: textColor }}>Loading...</Text></View>;
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
+    <View style={[styles.container, { backgroundColor }]}>
       {/* Header */}
-      <View style={[styles.header, {borderBottomColor: isDarkTheme ? '#333' : '#ddd'}]}>
+      <View style={[styles.header, { borderBottomColor: isDarkTheme ? '#333' : '#ddd' }]}>
         <TouchableOpacity onPress={handleGoBack}>
           <Ionicons name={'chevron-back'} size={20} color={primaryColor.main} />
         </TouchableOpacity>
-        <View style={{flex: 3, alignItems: 'center', flexDirection: 'row', justifyContent: 'center'}}>
-          <Text style={[styles.headerTitle, {color: textColor}]}>Update Event</Text>
-          <MaterialCommunityIcons name={'party-popper'} size={20} style={{marginLeft: 10}} color={primaryColor.main} />
+        <View style={{ flex: 3, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
+          <Text style={[styles.headerTitle, { color: textColor }]}>Update Event</Text>
+          <MaterialCommunityIcons name={'party-popper'} size={20} style={{ marginLeft: 10 }} color={primaryColor.main} />
         </View>
       </View>
 
       <TouchableWithoutFeedback onPress={dismissKeyboardAndDropdown}>
         <ScrollView contentContainerStyle={styles.content} nestedScrollEnabled={true} keyboardShouldPersistTaps="handled">
-          <Text style={[styles.label, {color: textColor}]}>Title of Event</Text>
+          <Text style={[styles.label, { color: textColor }]}>Title of Event</Text>
           <TextInput
-            style={[styles.input, {borderColor: errors.title ? 'red' : defaultBorderColor, color: textColor}]}
+            style={[styles.input, { borderColor: errors.title ? 'red' : defaultBorderColor, color: textColor }]}
             placeholder="Enter title"
             placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
             value={title}
             onChangeText={setTitle}
           />
 
-          <Text style={[styles.label, {color: textColor}]}>Address</Text>
+          <Text style={[styles.label, { color: textColor }]}>Address</Text>
           <View style={styles.addressContainer}>
             <CustomPlacesAutocomplete
               isDarkTheme={isDarkTheme}
@@ -345,23 +343,23 @@ const EditEventScreen = () => {
             />
           </View>
 
-          <Text style={[styles.label, {color: textColor}]}>Category</Text>
+          <Text style={[styles.label, { color: textColor }]}>Category</Text>
           <View style={styles.chipContainer}>
-             {categories.map(cat => (
-                <TouchableOpacity
-                  key={cat.id}
-                  style={[styles.chip, {backgroundColor: cat.selected ? primaryColor.main : (isDarkTheme ? '#333' : '#ddd')}]}
-                  onPress={() => toggleCategory(cat.id)}>
-                  <Text style={{color: cat.selected ? '#fff' : textColor, fontWeight: 'bold'}}>{cat.label}</Text>
-                </TouchableOpacity>
-              ))}
+            {categories.map(cat => (
+              <TouchableOpacity
+                key={cat.id}
+                style={[styles.chip, { backgroundColor: cat.selected ? primaryColor.main : (isDarkTheme ? '#333' : '#ddd') }]}
+                onPress={() => toggleCategory(cat.id)}>
+                <Text style={{ color: cat.selected ? '#fff' : textColor, fontWeight: 'bold' }}>{cat.label}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
 
           <View style={styles.row}>
-            <Text style={[styles.label, {color: textColor}]}>Date</Text>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.inputRow, {backgroundColor: isDarkTheme ? '#333' : '#ddd'}]}>
-              <Ionicons name="calendar-outline" size={20} color={textColor} style={{marginRight: 5}} />
-              <Text style={{color: textColor}}>{date.toDateString()}</Text>
+            <Text style={[styles.label, { color: textColor }]}>Date</Text>
+            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.inputRow, { backgroundColor: isDarkTheme ? '#333' : '#ddd' }]}>
+              <Ionicons name="calendar-outline" size={20} color={textColor} style={{ marginRight: 5 }} />
+              <Text style={{ color: textColor }}>{date.toDateString()}</Text>
             </TouchableOpacity>
             <DatePicker
               modal
@@ -374,10 +372,10 @@ const EditEventScreen = () => {
           </View>
 
           <View style={styles.row}>
-            <Text style={[styles.label, {color: textColor}]}>Start Time</Text>
-            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={[styles.inputRow, {backgroundColor: isDarkTheme ? '#333' : '#ddd'}]}>
-              <Ionicons name="time-outline" size={20} color={textColor} style={{marginRight: 5}} />
-              <Text style={{color: textColor}}>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+            <Text style={[styles.label, { color: textColor }]}>Start Time</Text>
+            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={[styles.inputRow, { backgroundColor: isDarkTheme ? '#333' : '#ddd' }]}>
+              <Ionicons name="time-outline" size={20} color={textColor} style={{ marginRight: 5 }} />
+              <Text style={{ color: textColor }}>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
             </TouchableOpacity>
             <DatePicker
               modal
@@ -389,75 +387,75 @@ const EditEventScreen = () => {
             />
           </View>
 
-          <View style={[styles.row, {justifyContent: 'space-between'}]}>
-            <Text style={[styles.label, {color: textColor}]}>Invitation Only</Text>
-            <Switch value={autoApproval} onValueChange={setAutoApproval} trackColor={{false: '#ccc', true: primaryColor.main}} />
+          <View style={[styles.row, { justifyContent: 'space-between' }]}>
+            <Text style={[styles.label, { color: textColor }]}>Invitation Only</Text>
+            <Switch value={autoApproval} onValueChange={setAutoApproval} trackColor={{ false: '#ccc', true: primaryColor.main }} />
           </View>
 
           <View style={styles.row}>
-            <Text style={[styles.label, {color: textColor}]}>Price Per Person</Text>
-            <View style={[styles.inputRowPrice, {borderColor: errors.price ? 'red' : defaultBorderColor}]}>
-              <Text style={{color: textColor, marginRight: 5}}>₹</Text>
-              <TextInput style={{flex: 1, color: textColor}} keyboardType="numeric" value={price} onChangeText={setPrice} />
+            <Text style={[styles.label, { color: textColor }]}>Price Per Person</Text>
+            <View style={[styles.inputRowPrice, { borderColor: errors.price ? 'red' : defaultBorderColor }]}>
+              <Text style={{ color: textColor, marginRight: 5 }}>₹</Text>
+              <TextInput style={{ flex: 1, color: textColor }} keyboardType="numeric" value={price} onChangeText={setPrice} />
             </View>
           </View>
 
-          <TouchableOpacity style={[styles.restrictionToggle, {borderColor}]} onPress={toggleRestrictions}>
-            <Text style={[styles.label, {color: textColor}]}>Restrictions</Text>
+          <TouchableOpacity style={[styles.restrictionToggle, { borderColor }]} onPress={toggleRestrictions}>
+            <Text style={[styles.label, { color: textColor }]}>Restrictions</Text>
             <Ionicons name={restrictionsExpanded ? 'chevron-down' : 'chevron-forward'} size={20} color={textColor} />
           </TouchableOpacity>
 
           {restrictionsExpanded && (
             <View style={styles.restrictionContent}>
-               <View style={styles.row}>
-                  <Text style={[styles.label, {color: textColor}]}>Max. Participants</Text>
-                  <View style={styles.counterContainer}>
-                    <TouchableOpacity onPress={decrementValue(setMaxParticipants)}><Ionicons name="remove-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
-                    <TextInput style={[styles.counterInput, {borderColor: defaultBorderColor, color: textColor}]} value={maxParticipants} onChangeText={setMaxParticipants} keyboardType="numeric" />
-                    <TouchableOpacity onPress={incrementValue(setMaxParticipants)}><Ionicons name="add-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
-                  </View>
-               </View>
-               <View style={styles.row}>
-                  <Text style={[styles.label, {color: textColor}]}>Min. Age</Text>
-                  <View style={styles.counterContainer}>
-                    <TouchableOpacity onPress={decrementValue(setMinAge)}><Ionicons name="remove-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
-                    <TextInput style={[styles.counterInput, {borderColor: defaultBorderColor, color: textColor}]} value={minAge} onChangeText={setMinAge} keyboardType="numeric" />
-                    <TouchableOpacity onPress={incrementValue(setMinAge)}><Ionicons name="add-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
-                  </View>
-               </View>
+              <View style={styles.row}>
+                <Text style={[styles.label, { color: textColor }]}>Max. Participants</Text>
+                <View style={styles.counterContainer}>
+                  <TouchableOpacity onPress={decrementValue(setMaxParticipants)}><Ionicons name="remove-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
+                  <TextInput style={[styles.counterInput, { borderColor: defaultBorderColor, color: textColor }]} value={maxParticipants} onChangeText={setMaxParticipants} keyboardType="numeric" />
+                  <TouchableOpacity onPress={incrementValue(setMaxParticipants)}><Ionicons name="add-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <Text style={[styles.label, { color: textColor }]}>Min. Age</Text>
+                <View style={styles.counterContainer}>
+                  <TouchableOpacity onPress={decrementValue(setMinAge)}><Ionicons name="remove-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
+                  <TextInput style={[styles.counterInput, { borderColor: defaultBorderColor, color: textColor }]} value={minAge} onChangeText={setMinAge} keyboardType="numeric" />
+                  <TouchableOpacity onPress={incrementValue(setMinAge)}><Ionicons name="add-circle-outline" size={20} color={primaryColor.main} /></TouchableOpacity>
+                </View>
+              </View>
             </View>
           )}
 
-          <Text style={[styles.label, {color: textColor}]}>Description</Text>
+          <Text style={[styles.label, { color: textColor }]}>Description</Text>
           <TextInput
-            style={[styles.input, {height: 100, borderColor: errors.description ? 'red' : defaultBorderColor, textAlignVertical: 'top'}]}
+            style={[styles.input, { height: 100, borderColor: errors.description ? 'red' : defaultBorderColor, textAlignVertical: 'top' }]}
             value={description}
             onChangeText={setDescription}
             multiline
           />
 
-          <Text style={[styles.label, {color: textColor}]}>Basic Amenities</Text>
+          <Text style={[styles.label, { color: textColor }]}>Basic Amenities</Text>
           <FlatList
             data={amenities}
             keyExtractor={item => item.id.toString()}
             scrollEnabled={false}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
               <TouchableOpacity style={styles.checkboxContainer} onPress={() => toggleAmenity(item.id)}>
                 <Ionicons name={item.selected ? 'checkbox-outline' : 'square-outline'} size={20} color={textColor} />
-                <Text style={{color: textColor, marginLeft: 8}}>{item.label}</Text>
+                <Text style={{ color: textColor, marginLeft: 8 }}>{item.label}</Text>
               </TouchableOpacity>
             )}
           />
 
-          <Text style={[styles.label, {color: textColor}]}>Images</Text>
-          <GestureHandlerRootView style={{height: 200}}>
-             <ImageGrid images={images} setImages={handleSetImages} />
+          <Text style={[styles.label, { color: textColor }]}>Images</Text>
+          <GestureHandlerRootView style={{ height: 200 }}>
+            <ImageGrid images={images} setImages={handleSetImages} />
           </GestureHandlerRootView>
 
         </ScrollView>
       </TouchableWithoutFeedback>
 
-      <View style={[styles.footer, {backgroundColor, borderTopColor: isDarkTheme ? '#333' : '#ddd'}]}>
+      <View style={[styles.footer, { backgroundColor, borderTopColor: isDarkTheme ? '#333' : '#ddd' }]}>
         {isLoading ? (
           <ActivityIndicator size="small" color={primaryColor.main} />
         ) : (

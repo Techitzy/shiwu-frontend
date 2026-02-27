@@ -1,19 +1,19 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import dayjs from 'dayjs';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
-  View,
+  Modal,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   useColorScheme,
-  ScrollView,
-  Modal,
+  View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import DatePicker from 'react-native-ui-datepicker';
-import dayjs from 'dayjs';
 
 const SearchFilterScreen = () => {
   const router = useRouter();
@@ -33,22 +33,22 @@ const SearchFilterScreen = () => {
     <ScrollView
       style={[
         styles.container,
-        {backgroundColor: isDarkMode ? '#000' : '#fff'},
+        { backgroundColor: isDarkMode ? '#000' : '#fff' },
       ]}
-      contentContainerStyle={{flexGrow: 1}}
+      contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}>
-      <View style={[{backgroundColor: isDarkMode ? '#000' : '#fff'}]}>
-        <View style={[styles.header, {backgroundColor: headerBackgroundColor}]}>
+      <View style={[{ backgroundColor: isDarkMode ? '#000' : '#fff' }]}>
+        <View style={[styles.header, { backgroundColor: headerBackgroundColor }]}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color={headerTextColor} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, {color: headerTextColor}]}>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>
             Filter
           </Text>
         </View>
 
         <View style={styles.locationContainer}>
-          <Text style={[styles.label, {color: isDarkMode ? '#fff' : '#333'}]}>
+          <Text style={[styles.label, { color: isDarkMode ? '#fff' : '#333' }]}>
             Location
           </Text>
           <View style={styles.inputContainer}>
@@ -59,7 +59,7 @@ const SearchFilterScreen = () => {
               style={styles.icon}
             />
             <TextInput
-              style={[styles.input, {color: isDarkMode ? '#fff' : '#333'}]}
+              style={[styles.input, { color: isDarkMode ? '#fff' : '#333' }]}
               placeholder="Search your location"
               placeholderTextColor="#888"
             />
@@ -67,19 +67,19 @@ const SearchFilterScreen = () => {
         </View>
 
         <View style={styles.dateContainer}>
-          <Text style={[styles.label, {color: isDarkMode ? '#fff' : '#333'}]}>
+          <Text style={[styles.label, { color: isDarkMode ? '#fff' : '#333' }]}>
             Select Date
           </Text>
           <TouchableOpacity
             onPress={() => setDatePickerModalVisibility(true)}
             style={styles.datePicker}>
-            <Text style={{color: isDarkMode ? '#fff' : '#333'}}>
+            <Text style={{ color: isDarkMode ? '#fff' : '#333' }}>
               {selectedDate
                 ? dayjs(selectedDate).isSame(dayjs(), 'day')
                   ? 'Today'
                   : dayjs(selectedDate).isSame(dayjs().add(1, 'day'), 'day')
-                  ? 'Tomorrow'
-                  : dayjs(selectedDate).format('ddd D MMM')
+                    ? 'Tomorrow'
+                    : dayjs(selectedDate).format('ddd D MMM')
                 : 'Pick a date'}
             </Text>
           </TouchableOpacity>
@@ -94,13 +94,13 @@ const SearchFilterScreen = () => {
             <View
               style={[
                 styles.modalContainer,
-                {backgroundColor: isDarkMode ? '#333' : '#fff'},
+                { backgroundColor: isDarkMode ? '#333' : '#fff' },
               ]}>
               <View style={styles.titleContainer}>
                 <Text
                   style={[
                     styles.modalTitle,
-                    {color: isDarkMode ? '#fff' : '#333'},
+                    { color: isDarkMode ? '#fff' : '#333' },
                   ]}>
                   When are you planning to go?
                 </Text>

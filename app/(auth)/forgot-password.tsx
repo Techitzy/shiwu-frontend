@@ -19,7 +19,7 @@ const ForgotPasswordScreen = () => {
   const { email: emailParam } = useLocalSearchParams();
   const initialEmail = Array.isArray(emailParam) ? emailParam[0] : emailParam || '';
 
-  const { isEmailExist, loginWithGoogle } = useContext(UserContext);
+  const { isEmailExist } = useContext(UserContext);
   const [email, setEmail] = useState(initialEmail);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);

@@ -1,31 +1,29 @@
-import React, {useState, useContext} from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  FlatList,
   Alert,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
   useColorScheme,
+  View
 } from 'react-native';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import {UserContext} from '../../../context/UserContext';
-import {darkColors, lightColors, primaryColor} from '../../../themes/basics';
+import { darkColors, lightColors, primaryColor } from '../../../themes/basics';
 
 const sampleUsers = [
-  {id: 1, name: 'John Doe', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 2, name: 'Jane Smith', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 3, name: 'Alice Johnson', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 4, name: 'Bob Brown', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 5, name: 'Tom Clark', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 6, name: 'Tina Adams', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 7, name: 'Mike Davis', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 8, name: 'Nancy Green', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 9, name: 'Lucy Lopez', imageUrl: 'https://via.placeholder.com/150'},
-  {id: 10, name: 'Charles Lee', imageUrl: 'https://via.placeholder.com/150'},
+  { id: 1, name: 'John Doe', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 2, name: 'Jane Smith', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 3, name: 'Alice Johnson', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 4, name: 'Bob Brown', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 5, name: 'Tom Clark', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 6, name: 'Tina Adams', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 7, name: 'Mike Davis', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 8, name: 'Nancy Green', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 9, name: 'Lucy Lopez', imageUrl: 'https://via.placeholder.com/150' },
+  { id: 10, name: 'Charles Lee', imageUrl: 'https://via.placeholder.com/150' },
 ];
 
 const ApproveRequestScreen = () => {
@@ -35,38 +33,38 @@ const ApproveRequestScreen = () => {
 
   const isDarkTheme = colorScheme === 'dark';
   const backgroundColor = isDarkTheme
-      ? darkColors.backgroundColor
-      : lightColors.backgroundColor;
+    ? darkColors.backgroundColor
+    : lightColors.backgroundColor;
   const textColor = isDarkTheme ? darkColors.textColor : lightColors.textColor;
   const informationText = '#333';
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
+    <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back-outline" size={26} color={textColor} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, {color: textColor}]}>
+        <Text style={[styles.headerTitle, { color: textColor }]}>
           Approve Requests
         </Text>
         <TouchableOpacity style={styles.manageButton}>
-          <Text style={[styles.manageTitle, {color: textColor}]}>Manage</Text>
+          <Text style={[styles.manageTitle, { color: textColor }]}>Manage</Text>
         </TouchableOpacity>
       </View>
       <FlatList
         data={sampleUsers}
         keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <View style={[styles.userContainer, { borderBottomColor: isDarkTheme ? '#333' : '#ccc' }]}>
-            <Image source={{uri: item.imageUrl}} style={styles.avatar} />
-            <Text style={[styles.userName, {color: textColor}]}>
+            <Image source={{ uri: item.imageUrl }} style={styles.avatar} />
+            <Text style={[styles.userName, { color: textColor }]}>
               {item.name}
             </Text>
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
                 style={[
                   styles.approveButton,
-                  {backgroundColor: primaryColor.main},
+                  { backgroundColor: primaryColor.main },
                 ]}
                 onPress={() =>
                   Alert.alert('Approved', `${item.name} has been approved.`)
@@ -76,7 +74,7 @@ const ApproveRequestScreen = () => {
               <TouchableOpacity
                 style={[
                   styles.rejectButton,
-                  {backgroundColor: informationText},
+                  { backgroundColor: informationText },
                 ]}
                 onPress={() =>
                   Alert.alert('Rejected', `${item.name} has been rejected.`)

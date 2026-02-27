@@ -1,14 +1,13 @@
-import React, {useState} from 'react';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
-  View,
+  ImageBackground,
+  StyleSheet,
   Text,
   TextInput,
-  Button,
-  StyleSheet,
-  ImageBackground,
   TouchableOpacity,
+  View
 } from 'react-native';
-import { useRouter } from 'expo-router';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -17,13 +16,13 @@ const RegisterScreen = () => {
   const router = useRouter();
 
   const handleRegister = () => {
-    console.log('Registering with:', {name, email, password});
+    console.log('Registering with:', { name, email, password });
     // Perform registration logic here
   };
 
   return (
     <ImageBackground
-      source={require('../../public/images/wallpaper.webp')} 
+      source={require('../../public/images/wallpaper.webp')}
       style={styles.background}
       resizeMode="cover">
       <View style={styles.container}>
@@ -52,11 +51,11 @@ const RegisterScreen = () => {
           onChangeText={setPassword}
         />
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Register</Text>
+          <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity style={{marginTop: 20}} onPress={() => router.push('/(auth)/login')}>
-            <Text style={{textAlign: 'center', color: '#fff'}}>Already have an account? Login</Text>
+
+        <TouchableOpacity style={{ marginTop: 20 }} onPress={() => router.push('/(auth)/login')}>
+          <Text style={{ textAlign: 'center', color: '#fff' }}>Already have an account? Login</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -90,15 +89,15 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   button: {
-      backgroundColor: '#7373FF',
-      padding: 15,
-      borderRadius: 5,
-      alignItems: 'center',
+    backgroundColor: '#7373FF',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
   },
   buttonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   }
 });
 

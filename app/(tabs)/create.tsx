@@ -1,37 +1,34 @@
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
-  useState,
+  useState
 } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Animated,
+  BackHandler,
+  FlatList,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
-  Switch,
-  StyleSheet,
-  useColorScheme,
-  FlatList,
-  ScrollView,
-  Animated,
-  Alert,
-  ActivityIndicator,
-  Button,
   TouchableWithoutFeedback,
-  Keyboard,
-  BackHandler,
+  useColorScheme,
+  View
 } from 'react-native';
-import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import DatePicker from 'react-native-date-picker';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import { useRouter } from 'expo-router';
-import ImageGrid from '../../components/shared/ImageGrid';
-import {EventContext} from '../../context/EventContext';
-import DiscardChangesModal from '../../components/shared/modals/DiscardChangesModal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CustomPlacesAutocomplete from '../../components/shared/CustomPlacesAutocomplete';
-import {primaryColor} from '../../themes/basics';
+import ImageGrid from '../../components/shared/ImageGrid';
+import DiscardChangesModal from '../../components/shared/modals/DiscardChangesModal';
+import { EventContext } from '../../context/EventContext';
+import { primaryColor } from '../../themes/basics';
 // import SkeletonCategoryLoader from '../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
 
 const getNextClosest30Minutes = () => {
@@ -158,9 +155,9 @@ const CreateEventScreen = () => {
     const updatedCategories = categories.map(cat => {
       if (cat.id === categoryId) {
         if (!cat.selected && currentSelectedCount < 3) {
-          return {...cat, selected: true};
+          return { ...cat, selected: true };
         } else if (cat.selected) {
-          return {...cat, selected: false};
+          return { ...cat, selected: false };
         }
       }
       return cat;
@@ -171,7 +168,7 @@ const CreateEventScreen = () => {
     const isCategorySelected = updatedCategories.some(cat => cat.selected);
     if (isCategorySelected) {
       setErrors(prevErrors => {
-        const {categories, ...rest} = prevErrors;
+        const { categories, ...rest } = prevErrors;
         return rest;
       });
     } else {
@@ -188,7 +185,7 @@ const CreateEventScreen = () => {
     // Revalidate the images dynamically
     if (newImages.length > 0) {
       setErrors(prevErrors => {
-        const {images, ...rest} = prevErrors;
+        const { images, ...rest } = prevErrors;
         return rest;
       });
     } else {
@@ -202,7 +199,7 @@ const CreateEventScreen = () => {
   const toggleAmenity = id => {
     setAmenities(prev =>
       prev.map(amenity =>
-        amenity.id === id ? {...amenity, selected: !amenity.selected} : amenity,
+        amenity.id === id ? { ...amenity, selected: !amenity.selected } : amenity,
       ),
     );
   };
@@ -225,7 +222,7 @@ const CreateEventScreen = () => {
     setter(prev => String(Math.max(Number(prev || 0) - 1, 0)));
 
   const validateInputs = () => {
-    const newErrors = {...errors};
+    const newErrors = { ...errors };
     if (!title.trim()) {
       newErrors.title = 'Required';
     } else {
@@ -399,7 +396,7 @@ const CreateEventScreen = () => {
     setMinAge('');
     setImages([]);
 
-    const resetCategories = categories.map(cat => ({...cat, selected: false}));
+    const resetCategories = categories.map(cat => ({ ...cat, selected: false }));
     setCategories(resetCategories);
 
     const resetAmenities = amenities.map(amenity => ({
@@ -431,12 +428,12 @@ const CreateEventScreen = () => {
   }, [handleGoBack]);
 
   return (
-    <View style={[styles.container, {backgroundColor}]}>
+    <View style={[styles.container, { backgroundColor }]}>
       {/* Header */}
       <View
         style={[
           styles.header,
-          {borderBottomColor: isDarkTheme ? '#333' : '#ddd'},
+          { borderBottomColor: isDarkTheme ? '#333' : '#ddd' },
         ]}>
         <TouchableOpacity onPress={handleGoBack}>
           <Ionicons name={'chevron-back'} size={20} color={primaryColor.main} />
@@ -449,13 +446,13 @@ const CreateEventScreen = () => {
             justifyContent: 'center',
           }}>
           {/* Center section */}
-          <Text style={[styles.headerTitle, {color: textColor}]}>
+          <Text style={[styles.headerTitle, { color: textColor }]}>
             Create Event
           </Text>
           <MaterialCommunityIcons
             name={'party-popper'}
             size={20}
-            style={{marginLeft: 10}}
+            style={{ marginLeft: 10 }}
             color={primaryColor.main}
           />
         </View>
@@ -473,7 +470,7 @@ const CreateEventScreen = () => {
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled">
           {/* Title */}
-          <Text style={[styles.label, {color: textColor}]}>Title of Event</Text>
+          <Text style={[styles.label, { color: textColor }]}>Title of Event</Text>
           <TextInput
             style={[
               styles.input,
@@ -487,7 +484,7 @@ const CreateEventScreen = () => {
             value={title}
             onChangeText={text => {
               setTitle(text);
-              if (errors.title) setErrors({...errors, title: ''});
+              if (errors.title) setErrors({ ...errors, title: '' });
             }}
           />
           {errors.title ? (
@@ -495,7 +492,7 @@ const CreateEventScreen = () => {
           ) : null}
 
           {/* Address */}
-          <Text style={[styles.label, {color: textColor}]}>Address</Text>
+          <Text style={[styles.label, { color: textColor }]}>Address</Text>
           <View style={styles.addressContainer}>
             <CustomPlacesAutocomplete
               isDarkTheme={isDarkTheme}
@@ -514,14 +511,14 @@ const CreateEventScreen = () => {
           ) : null}
 
           {/* Category */}
-          <Text style={[styles.label, {color: textColor}]}>Category</Text>
+          <Text style={[styles.label, { color: textColor }]}>Category</Text>
           <View style={styles.iconContainer}>
             <Ionicons
               name="information-circle-outline"
               size={14}
               color={textColor}
             />
-            <Text style={[styles.informationText, {color: textColor}]}>
+            <Text style={[styles.informationText, { color: textColor }]}>
               Select up to 3 categories
             </Text>
           </View>
@@ -537,8 +534,8 @@ const CreateEventScreen = () => {
                       backgroundColor: cat.selected
                         ? primaryColor.main
                         : isDarkTheme
-                        ? '#333'
-                        : '#ddd',
+                          ? '#333'
+                          : '#ddd',
                     },
                   ]}
                   onPress={() => toggleCategory(cat.id)}>
@@ -564,8 +561,8 @@ const CreateEventScreen = () => {
                       backgroundColor: cat.selected
                         ? primaryColor.main
                         : isDarkTheme
-                        ? '#333'
-                        : '#ddd',
+                          ? '#333'
+                          : '#ddd',
                     },
                   ]}
                   onPress={() => toggleCategory(cat.id)}>
@@ -590,7 +587,7 @@ const CreateEventScreen = () => {
                 <TouchableOpacity
                   onPress={() => setShowAllCategories(prev => !prev)}>
                   <Text
-                    style={[styles.createButton, {color: primaryColor.main}]}>
+                    style={[styles.createButton, { color: primaryColor.main }]}>
                     {showAllCategories ? 'Show Less' : 'Show More'}
                   </Text>
                 </TouchableOpacity>
@@ -603,20 +600,20 @@ const CreateEventScreen = () => {
 
           {/* Date */}
           <View style={styles.row}>
-            <Text style={[styles.label, {color: textColor}]}>Date</Text>
+            <Text style={[styles.label, { color: textColor }]}>Date</Text>
             <TouchableOpacity
               onPress={() => setShowDatePicker(true)}
               style={[
                 styles.inputRow,
-                {backgroundColor: isDarkTheme ? '#333' : '#ddd'},
+                { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
               ]}>
               <Ionicons
                 name="calendar-outline"
-                style={{marginRight: 5}}
+                style={{ marginRight: 5 }}
                 size={20}
                 color={textColor}
               />
-              <Text style={{color: textColor}}>
+              <Text style={{ color: textColor }}>
                 {date ? date.toDateString() : 'Select Date'}
               </Text>
             </TouchableOpacity>
@@ -644,25 +641,25 @@ const CreateEventScreen = () => {
 
           {/* Start Time */}
           <View style={styles.row}>
-            <Text style={[styles.label, {color: textColor}]}>Start Time</Text>
+            <Text style={[styles.label, { color: textColor }]}>Start Time</Text>
             <TouchableOpacity
               onPress={() => setShowTimePicker(true)}
               style={[
                 styles.inputRow,
-                {backgroundColor: isDarkTheme ? '#333' : '#ddd'},
+                { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
               ]}>
               <Ionicons
                 name="time-outline"
-                style={{marginRight: 5}}
+                style={{ marginRight: 5 }}
                 size={20}
                 color={textColor}
               />
-              <Text style={{color: textColor}}>
+              <Text style={{ color: textColor }}>
                 {startTime
                   ? startTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
                   : 'Select Start Time'}
               </Text>
             </TouchableOpacity>
@@ -689,37 +686,37 @@ const CreateEventScreen = () => {
           ) : null}
 
           {/* Auto Approval */}
-          <View style={[styles.row, {justifyContent: 'space-between'}]}>
-            <Text style={[styles.label, {color: textColor}]}>
+          <View style={[styles.row, { justifyContent: 'space-between' }]}>
+            <Text style={[styles.label, { color: textColor }]}>
               Invitation Only
             </Text>
             <Switch
               value={autoApproval}
               onValueChange={setAutoApproval}
-              trackColor={{false: '#ccc', true: primaryColor.main}}
+              trackColor={{ false: '#ccc', true: primaryColor.main }}
             />
           </View>
 
           {/* Price Per Person */}
           <View style={styles.row}>
-            <Text style={[styles.label, {color: textColor}]}>
+            <Text style={[styles.label, { color: textColor }]}>
               Price Per Person
             </Text>
             <View
               style={[
                 styles.inputRowPrice,
-                {borderColor: errors.price ? 'red' : defaultBorderColor},
+                { borderColor: errors.price ? 'red' : defaultBorderColor },
               ]}>
-              <Text style={{color: textColor, marginRight: 5}}>₹</Text>
+              <Text style={{ color: textColor, marginRight: 5 }}>₹</Text>
               <TextInput
-                style={{flex: 1, color: textColor}}
+                style={{ flex: 1, color: textColor }}
                 placeholder="Enter price"
                 placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
                 keyboardType="numeric"
                 value={price}
                 onChangeText={text => {
                   setPrice(text);
-                  if (errors.price) setErrors({...errors, price: ''});
+                  if (errors.price) setErrors({ ...errors, price: '' });
                 }}
               />
             </View>
@@ -729,9 +726,9 @@ const CreateEventScreen = () => {
           ) : null}
 
           <TouchableOpacity
-            style={[styles.restrictionToggle, {borderColor}]}
+            style={[styles.restrictionToggle, { borderColor }]}
             onPress={toggleRestrictions}>
-            <Text style={[styles.label, {color: textColor}]}>Restrictions</Text>
+            <Text style={[styles.label, { color: textColor }]}>Restrictions</Text>
             <Ionicons
               name={restrictionsExpanded ? 'chevron-down' : 'chevron-forward'}
               size={20}
@@ -743,13 +740,13 @@ const CreateEventScreen = () => {
           <Animated.View
             style={[
               styles.restrictionContent,
-              {height: restrictionsExpanded ? null : 0, overflow: 'hidden'},
+              { height: restrictionsExpanded ? null : 0, overflow: 'hidden' },
             ]}>
             {restrictionsExpanded && (
               <>
                 {/* Max Participants */}
                 <View style={[styles.row, styles.restrictionRow]}>
-                  <Text style={[styles.label, {color: textColor}]}>
+                  <Text style={[styles.label, { color: textColor }]}>
                     Max. Participants
                   </Text>
                   <View style={styles.counterContainer}>
@@ -795,7 +792,7 @@ const CreateEventScreen = () => {
 
                 {/* Min Age */}
                 <View style={[styles.row, styles.restrictionRow]}>
-                  <Text style={[styles.label, {color: textColor}]}>
+                  <Text style={[styles.label, { color: textColor }]}>
                     Min. Age
                   </Text>
                   <View style={styles.counterContainer}>
@@ -841,7 +838,7 @@ const CreateEventScreen = () => {
           </Animated.View>
 
           {/* Description */}
-          <Text style={[styles.label, {color: textColor}]}>Description</Text>
+          <Text style={[styles.label, { color: textColor }]}>Description</Text>
           <TextInput
             style={[
               styles.input,
@@ -856,7 +853,7 @@ const CreateEventScreen = () => {
             value={description}
             onChangeText={text => {
               setDescription(text);
-              if (errors.description) setErrors({...errors, description: ''});
+              if (errors.description) setErrors({ ...errors, description: '' });
             }}
             multiline
           />
@@ -865,7 +862,7 @@ const CreateEventScreen = () => {
           ) : null}
 
           {/* Basic Amenities */}
-          <Text style={[styles.label, {color: textColor}]}>
+          <Text style={[styles.label, { color: textColor }]}>
             Basic Amenities
           </Text>
 
@@ -873,7 +870,7 @@ const CreateEventScreen = () => {
             <FlatList
               data={amenities}
               keyExtractor={item => item.id.toString()}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.checkboxContainer}
                   onPress={() => toggleAmenity(item.id)}>
@@ -882,7 +879,7 @@ const CreateEventScreen = () => {
                     size={20}
                     color={textColor}
                   />
-                  <Text style={{color: textColor, marginLeft: 8}}>
+                  <Text style={{ color: textColor, marginLeft: 8 }}>
                     {item.label}
                   </Text>
                 </TouchableOpacity>
@@ -892,7 +889,7 @@ const CreateEventScreen = () => {
             <FlatList
               data={amenities.slice(0, 10)} // Show only the first 10 items
               keyExtractor={item => item.id.toString()}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.checkboxContainer}
                   onPress={() => toggleAmenity(item.id)}>
@@ -901,7 +898,7 @@ const CreateEventScreen = () => {
                     size={20}
                     color={textColor}
                   />
-                  <Text style={{color: textColor, marginLeft: 8}}>
+                  <Text style={{ color: textColor, marginLeft: 8 }}>
                     {item.label}
                   </Text>
                 </TouchableOpacity>
@@ -912,7 +909,7 @@ const CreateEventScreen = () => {
           {showAllAmenities && (
             <View style={styles.newAmenityContainer}>
               <TextInput
-                style={[styles.input, {borderColor, color: textColor}]}
+                style={[styles.input, { borderColor, color: textColor }]}
                 placeholder="Add a new amenity"
                 placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
                 value={newAmenity}
@@ -931,14 +928,14 @@ const CreateEventScreen = () => {
           )}
 
           <TouchableOpacity
-            style={{marginBottom: 10}}
+            style={{ marginBottom: 10 }}
             onPress={() => setShowAllAmenities(prev => !prev)}>
-            <Text style={[styles.createButton, {color: primaryColor.main}]}>
+            <Text style={[styles.createButton, { color: primaryColor.main }]}>
               {showAllAmenities ? 'Show Less' : 'Show More'}
             </Text>
           </TouchableOpacity>
 
-          <Text style={[styles.label, {color: textColor}]}>
+          <Text style={[styles.label, { color: textColor }]}>
             Add Images for your event
           </Text>
           <View style={styles.iconContainer}>
@@ -947,7 +944,7 @@ const CreateEventScreen = () => {
               size={14}
               color={textColor}
             />
-            <Text style={[styles.informationText, {color: textColor}]}>
+            <Text style={[styles.informationText, { color: textColor }]}>
               The first image will be set as the banner
             </Text>
           </View>
@@ -961,24 +958,24 @@ const CreateEventScreen = () => {
           <View
             style={[
               styles.footerContainer,
-              {backgroundColor: isDarkTheme ? '#333' : '#f5f5f5'},
+              { backgroundColor: isDarkTheme ? '#333' : '#f5f5f5' },
             ]}>
-            <Text style={[styles.title, {color: textColor}]}>
+            <Text style={[styles.title, { color: textColor }]}>
               PLEASE READ BEFORE CREATING AN EVENT:
             </Text>
             <View style={styles.pointsContainer}>
               {/* <Text style={[styles.point, {color: textColor}]}>
                 1. We will take 15% of the ticket amount as commission.
               </Text> */}
-              <Text style={[styles.point, {color: textColor}]}>
+              <Text style={[styles.point, { color: textColor }]}>
                 1. Money will be transferred to the host upon successful
                 completion of the event.
               </Text>
-              <Text style={[styles.point, {color: textColor}]}>
+              <Text style={[styles.point, { color: textColor }]}>
                 2. Cancellations within 24 hours of the event will not be
                 refundable.
               </Text>
-              <Text style={[styles.point, {color: textColor}]}>
+              <Text style={[styles.point, { color: textColor }]}>
                 3. Any disputes will be handled according to our policy.
               </Text>
             </View>
@@ -988,7 +985,7 @@ const CreateEventScreen = () => {
       <View
         style={[
           styles.footer,
-          {backgroundColor, borderTopColor: isDarkTheme ? '#333' : '#ddd'},
+          { backgroundColor, borderTopColor: isDarkTheme ? '#333' : '#ddd' },
         ]}>
         {isLoading ? (
           <ActivityIndicator
@@ -1042,7 +1039,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: primaryColor.main,
     shadowColor: '#7373FF',
-    shadowOffset: {width: 4, height: 4},
+    shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
@@ -1054,7 +1051,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: primaryColor.main,
     shadowColor: '#7373FF',
-    shadowOffset: {width: 4, height: 4},
+    shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
