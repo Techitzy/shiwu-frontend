@@ -151,6 +151,8 @@ const CreateEventScreen = () => {
   };
 
   const toggleCategory = categoryId => {
+    if (!categories || !Array.isArray(categories)) return;
+    
     const currentSelectedCount = categories.filter(cat => cat.selected).length;
 
     const updatedCategories = categories.map(cat => {
@@ -198,6 +200,8 @@ const CreateEventScreen = () => {
   };
 
   const toggleAmenity = id => {
+    if (!amenities || !Array.isArray(amenities)) return;
+    
     setAmenities(prev =>
       prev.map(amenity =>
         amenity.id === id ? { ...amenity, selected: !amenity.selected } : amenity,
@@ -206,6 +210,8 @@ const CreateEventScreen = () => {
   };
 
   const addAmenity = () => {
+    if (!amenities || !Array.isArray(amenities)) return;
+    
     if (newAmenity.trim()) {
       const newAmenityItem = {
         id: amenities.length + 1,
@@ -260,7 +266,7 @@ const CreateEventScreen = () => {
       delete newErrors.minAge;
     }
 
-    const isCategorySelected = categories.some(cat => cat.selected);
+    const isCategorySelected = categories && Array.isArray(categories) && categories.some(cat => cat.selected);
     if (!isCategorySelected) {
       newErrors.categories = 'At least 1 category must be selected';
     } else {
@@ -324,10 +330,10 @@ const CreateEventScreen = () => {
             },
           },
           location: city,
-          categories: categories.filter(cat => cat.selected).map(cat => cat.id),
-          amenities: amenities
-            .filter(amenity => amenity.selected)
-            .map(amenity => amenity.id),
+          categories: categories && Array.isArray(categories) ? categories.filter(cat => cat.selected).map(cat => cat.id) : [],
+          amenities: amenities && Array.isArray(amenities)
+            ? amenities.filter(amenity => amenity.selected).map(amenity => amenity.id)
+            : [],
         };
 
         const response = await createEventWithImages(eventDetails, images);
@@ -343,6 +349,10 @@ const CreateEventScreen = () => {
   };
 
   const isFormDirty = () => {
+    if (!categories || !Array.isArray(categories) || !amenities || !Array.isArray(amenities)) {
+      return false;
+    }
+    
     const initialCategories = categories.map(cat => ({
       id: cat.id,
       selected: cat.selected,
@@ -397,14 +407,18 @@ const CreateEventScreen = () => {
     setMinAge('');
     setImages([]);
 
-    const resetCategories = categories.map(cat => ({ ...cat, selected: false }));
-    setCategories(resetCategories);
+    if (categories && Array.isArray(categories)) {
+      const resetCategories = categories.map(cat => ({ ...cat, selected: false }));
+      setCategories(resetCategories);
+    }
 
-    const resetAmenities = amenities.map(amenity => ({
-      ...amenity,
-      selected: false,
-    }));
-    setAmenities(resetAmenities);
+    if (amenities && Array.isArray(amenities)) {
+      const resetAmenities = amenities.map(amenity => ({
+        ...amenity,
+        selected: false,
+      }));
+      setAmenities(resetAmenities);
+    }
 
     setShowPopup(false);
 
@@ -527,7 +541,7 @@ const CreateEventScreen = () => {
 
             <View style={styles.chipContainer}>
               {showAllCategories ? (
-                categories.map(cat => (
+                categories && Array.isArray(categories) ? categories.map(cat => (
                   <TouchableOpacity
                     key={cat.id}
                     style={[
@@ -549,12 +563,12 @@ const CreateEventScreen = () => {
                       {cat.label}
                     </Text>
                   </TouchableOpacity>
-                ))
+                )) : null
               ) : loading ? (
                 // <SkeletonCategoryLoader theme={colorScheme} />
                 <></>
               ) : (
-                categories.slice(0, 10).map(cat => (
+                categories && Array.isArray(categories) ? categories.slice(0, 10).map(cat => (
                   <TouchableOpacity
                     key={cat.id}
                     style={[
@@ -576,7 +590,7 @@ const CreateEventScreen = () => {
                       {cat.label}
                     </Text>
                   </TouchableOpacity>
-                ))
+                )) : null
               )}
               {!loading && (
                 <View
@@ -870,7 +884,7 @@ const CreateEventScreen = () => {
 
             {showAllAmenities ? (
               <FlatList
-                data={amenities}
+                data={amenities && Array.isArray(amenities) ? amenities : []}
                 keyExtractor={item => item.id.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
@@ -889,7 +903,7 @@ const CreateEventScreen = () => {
               />
             ) : (
               <FlatList
-                data={amenities.slice(0, 10)} // Show only the first 10 items
+                data={amenities && Array.isArray(amenities) ? amenities.slice(0, 10) : []} // Show only the first 10 items
                 keyExtractor={item => item.id.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity

@@ -81,10 +81,20 @@ const EditPersonalInfoScreen = () => {
         return;
     }
 
+    console.log('[UserContext] updateUserLocation — AsyncStorage.getItem("accessToken") ...');
+    const accessTokenDetails = await AsyncStorage.getItem('accessToken');
+    console.log('[UserContext] updateUserLocation — accessToken:', accessTokenDetails ? '✓ found' : '✗ null');
+
+    if (!accessTokenDetails) {
+      throw new Error('Access token not found.');
+    }
+
     try {
       setIsLoading(true);
       const response = await axios.patch(
-        `https://shivoo-backend.onrender.com/user_auth/users/${user.id}`,
+        `https://shivoo-backend.onrender.com/user_auth/users?access_token=${encodeURIComponent(
+          accessTokenDetails.trim(),
+        )}`,
         { [key]: value },
         {
           headers: {
