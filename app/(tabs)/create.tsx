@@ -918,7 +918,7 @@ const CreateEventScreen = () => {
                   onChangeText={setNewAmenity}
                 />
                 <TouchableOpacity
-                  onPress={incrementValue(addAmenity)}
+                  onPress={addAmenity}
                   style={styles.addButton}>
                   <Ionicons
                     name="add-circle-outline"

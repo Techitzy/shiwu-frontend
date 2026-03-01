@@ -17,7 +17,6 @@ export const EventProvider = ({ children }) => {
 
   const fetchCategories = async () => {
     try {
-      setLoading(true);
       console.log('[EventContext] fetchCategories — AsyncStorage.getItem("accessToken") ...');
       const accessTokenDetails = await AsyncStorage.getItem('accessToken');
       console.log('[EventContext] fetchCategories — accessToken:', accessTokenDetails ? '✓ found' : '✗ null');
@@ -37,21 +36,12 @@ export const EventProvider = ({ children }) => {
         },
       );
 
-      setLoading(false);
-      setCategories(
-        response.data.map(category => ({
-          id: category.id,
-          label: category.name,
-          selected: false,
-        })),
-      );
       return response.data.map(category => ({
         id: category.id,
         label: category.name,
         selected: false,
       }));
     } catch (error) {
-      setLoading(false);
       console.error('Error in fetchCategories:', error);
       throw error;
     }
@@ -91,18 +81,23 @@ export const EventProvider = ({ children }) => {
 
   useEffect(() => {
     if (fetchRequired) {
-      const loadAmenities = async () => {
+      const loadData = async () => {
         try {
-          const amenitiesData = await fetchAmenities();
+          setLoading(true);
+          const [categoriesData, amenitiesData] = await Promise.all([
+            fetchCategories(),
+            fetchAmenities()
+          ]);
+          setCategories(categoriesData);
           setAmenities(amenitiesData);
         } catch (error) {
-          console.error('Error fetching amenities:', error);
+          console.error('Error fetching data:', error);
         } finally {
           setLoading(false);
         }
       };
 
-      loadAmenities();
+      loadData();
     }
   }, [fetchRequired]);
 
