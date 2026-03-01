@@ -88,10 +88,13 @@ export const EventProvider = ({ children }) => {
             fetchCategories(),
             fetchAmenities()
           ]);
-          setCategories(categoriesData);
-          setAmenities(amenitiesData);
+          setCategories(categoriesData || []);
+          setAmenities(amenitiesData || []);
         } catch (error) {
           console.error('Error fetching data:', error);
+          // Set empty arrays on error to prevent crashes
+          setCategories([]);
+          setAmenities([]);
         } finally {
           setLoading(false);
         }

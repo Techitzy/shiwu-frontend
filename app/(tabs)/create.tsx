@@ -41,8 +41,24 @@ const getNextClosest30Minutes = () => {
 };
 
 const CreateEventScreen = () => {
+  console.log('[CreateEventScreen] Component rendering...');
   const colorScheme = useColorScheme();
   const router = useRouter();
+  const eventContext = useContext(EventContext);
+  
+  console.log('[CreateEventScreen] EventContext:', eventContext ? 'Available' : 'NULL');
+  
+  // Safety check: ensure context is available
+  if (!eventContext) {
+    console.error('[CreateEventScreen] EventContext is null or undefined!');
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={primaryColor.main} />
+        <Text style={{ marginTop: 10 }}>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+  
   const {
     loading,
     categories,
@@ -52,7 +68,10 @@ const CreateEventScreen = () => {
     setFetchRequired,
     createEventWithImages,
     fetchAllEvents,
-  } = useContext(EventContext);
+  } = eventContext;
+  
+  console.log('[CreateEventScreen] Categories:', categories ? `Array(${categories.length})` : 'undefined');
+  console.log('[CreateEventScreen] Amenities:', amenities ? `Array(${amenities.length})` : 'undefined');
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState('');
   const [date, setDate] = useState(new Date());
@@ -126,12 +145,18 @@ const CreateEventScreen = () => {
   const [animationHeight] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    setFetchRequired(true);
+    try {
+      console.log('[CreateEventScreen] useEffect - Setting fetchRequired to true');
+      setFetchRequired(true);
 
-    return () => {
-      setFetchRequired(false);
-    };
-  }, []);
+      return () => {
+        console.log('[CreateEventScreen] useEffect cleanup - Setting fetchRequired to false');
+        setFetchRequired(false);
+      };
+    } catch (error) {
+      console.error('[CreateEventScreen] Error in useEffect:', error);
+    }
+  }, [setFetchRequired]);
 
   const toggleRestrictions = () => {
     if (restrictionsExpanded) {
