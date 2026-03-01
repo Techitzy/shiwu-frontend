@@ -34,19 +34,19 @@ const SignUpScreen = () => {
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [progress, setProgress] = useState(1);
-  const [birthday, setBirthday] = useState(null);
+  const [birthday, setBirthday] = useState<Date | null>(null);
   const [gender, setGender] = useState('');
   const [password, setPassword] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   // Validation for full name
-  const validateFullName = name => {
+  const validateFullName = (name: string) => {
     const nameRegex = /^[a-zA-Z\s]+$/;
     return nameRegex.test(name);
   };
 
-  const calculateAge = date => {
+  const calculateAge = (date: Date) => {
     const today = new Date();
     const birthDate = new Date(date);
     let age = today.getFullYear() - birthDate.getFullYear();
@@ -112,7 +112,7 @@ const SignUpScreen = () => {
     }
   };
 
-  const handleBirthdayChange = date => {
+  const handleBirthdayChange = (date: Date) => {
     setBirthday(date);
     setShowDatePicker(false);
   };
@@ -194,21 +194,20 @@ const SignUpScreen = () => {
                   placeholderTextColor={isDarkTheme ? '#888' : '#aaa'}
                   value={birthday ? birthday.toLocaleDateString('en-GB') : ''}
                   editable={false}
+                  pointerEvents="none"
                 />
               </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePickerModal
-                  isVisible={showDatePicker}
-                  mode="date"
-                  onConfirm={date => {
-                    handleBirthdayChange(date);
-                    setShowDatePicker(false);
-                  }}
-                  onCancel={() => setShowDatePicker(false)}
-                  maximumDate={new Date()}
-                  minimumDate={new Date('1900-01-01')}
-                />
-              )}
+              <DateTimePickerModal
+                isVisible={showDatePicker}
+                mode="date"
+                onConfirm={date => {
+                  handleBirthdayChange(date);
+                  setShowDatePicker(false);
+                }}
+                onCancel={() => setShowDatePicker(false)}
+                maximumDate={new Date()}
+                minimumDate={new Date('1900-01-01')}
+              />
             </>
           )}
 

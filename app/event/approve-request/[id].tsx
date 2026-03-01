@@ -49,8 +49,10 @@ const ApproveRequestScreen = () => {
           <Text style={[styles.headerTitle, { color: textColor }]}>
             Approve Requests
           </Text>
-          <TouchableOpacity style={styles.manageButton}>
-            <Text style={[styles.manageTitle, { color: textColor }]}>Manage</Text>
+          <TouchableOpacity 
+            style={styles.manageButton}
+            onPress={() => router.push(`/event/manage/${id}`)}>
+            <Text style={[styles.manageTitle, { color: primaryColor.main }]}>Manage</Text>
           </TouchableOpacity>
         </View>
         <FlatList

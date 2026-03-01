@@ -30,6 +30,7 @@ function RootLayoutNav() {
           <Stack.Screen name="event/[id]" options={{ title: 'Event Details' }} />
           <Stack.Screen name="event/approve-request/[id]" options={{ title: 'Approve Requests' }} />
           <Stack.Screen name="event/edit/[id]" options={{ title: 'Edit Event' }} />
+          <Stack.Screen name="event/manage/[id]" options={{ title: 'Manage Users' }} />
         </>
       ) : (
         // ── Unauthenticated ───────────────────────────────────────────────────

@@ -17,12 +17,23 @@ import { EventContext } from '../../context/EventContext';
 import { UserContext } from '../../context/UserContext';
 import { darkColors, lightColors, primaryColor } from '../../themes/basics';
 
+interface Category {
+  id: number;
+  label: string;
+  selected: boolean;
+}
+
+interface Tab {
+  id: string | number;
+  label: string;
+}
+
 const HomeScreen = () => {
   const { user } = useContext(UserContext);
   const { events, eventsLoading, fetchAllEvents, fetchCategories, loading } = useContext(EventContext);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('All');
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const theme = useColorScheme();
   const colorScheme = useColorScheme();
@@ -33,8 +44,8 @@ const HomeScreen = () => {
     const filteredByCategory =
       activeTab === 'All'
         ? events
-        : events.filter(event =>
-          event.categories?.some(category => category.name === activeTab),
+        : events.filter((event: any) =>
+          event.categories?.some((category: any) => category.name === activeTab),
         );
     return filteredByCategory;
   };
@@ -49,8 +60,13 @@ const HomeScreen = () => {
         categoriesPromise,
       ]);
 
-      if (categoriesFromServer) {
+      console.log('Categories from server:', categoriesFromServer);
+      
+      if (categoriesFromServer && categoriesFromServer.length > 0) {
         setCategories(categoriesFromServer.slice(0, 7));
+        console.log('Categories set:', categoriesFromServer.slice(0, 7));
+      } else {
+        console.log('No categories returned from server');
       }
     } catch (error) {
       console.error('Failed to fetch data:', error);
@@ -61,7 +77,7 @@ const HomeScreen = () => {
     fetchData();
   }, []);
 
-  const tabs = [{ id: 'all', label: 'All' }, ...categories.map(c => ({ id: c.id, label: c.name }))];
+  const tabs: Tab[] = [{ id: 'all', label: 'All' }, ...categories.map(c => ({ id: c.id, label: c.label }))];
 
   const dynamicStyles = styles(theme);
 
@@ -113,7 +129,7 @@ const HomeScreen = () => {
 
             {getFilteredEvents()
               .slice(0, 10)
-              .map(event => (
+              .map((event: any) => (
                 <TrendingEvent key={event.id} event={event} />
               ))}
             {getFilteredEvents().length > 10 && (
@@ -160,7 +176,7 @@ const HomeScreen = () => {
 
 export default HomeScreen;
 
-const styles = theme =>
+const styles = (theme: string | null | undefined) =>
   StyleSheet.create({
     safeArea: {
       flex: 1,
