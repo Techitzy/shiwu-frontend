@@ -1,11 +1,8 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useState
-} from 'react';
+import CustomPlacesAutocomplete from "@/components/shared/CustomPlacesAutocomplete";
+import ImageGrid from "@/components/shared/ImageGrid";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -20,16 +17,14 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   useColorScheme,
-  View
-} from 'react-native';
-import DatePicker from 'react-native-date-picker';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomPlacesAutocomplete from '../../components/shared/CustomPlacesAutocomplete';
-import ImageGrid from '../../components/shared/ImageGrid';
-import DiscardChangesModal from '../../components/shared/modals/DiscardChangesModal';
-import { EventContext } from '../../context/EventContext';
-import { primaryColor } from '../../themes/basics';
+  View,
+} from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { SafeAreaView } from "react-native-safe-area-context";
+import DiscardChangesModal from "../../components/shared/modals/DiscardChangesModal";
+import { EventContext } from "../../context/EventContext";
+import { primaryColor } from "../../themes/basics";
 // import SkeletonCategoryLoader from '../../components/shared/skeletonLoaders/SkeletonCategoryLoader';
 
 const getNextClosest30Minutes = () => {
@@ -41,24 +36,29 @@ const getNextClosest30Minutes = () => {
 };
 
 const CreateEventScreen = () => {
-  console.log('[CreateEventScreen] Component rendering...');
+  console.log("[CreateEventScreen] Component rendering...");
   const colorScheme = useColorScheme();
   const router = useRouter();
   const eventContext = useContext(EventContext);
-  
-  console.log('[CreateEventScreen] EventContext:', eventContext ? 'Available' : 'NULL');
-  
+
+  console.log(
+    "[CreateEventScreen] EventContext:",
+    eventContext ? "Available" : "NULL",
+  );
+
   // Safety check: ensure context is available
   if (!eventContext) {
-    console.error('[CreateEventScreen] EventContext is null or undefined!');
+    console.error("[CreateEventScreen] EventContext is null or undefined!");
     return (
-      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <ActivityIndicator size="large" color={primaryColor.main} />
         <Text style={{ marginTop: 10 }}>Loading...</Text>
       </SafeAreaView>
     );
   }
-  
+
   const {
     loading,
     categories,
@@ -69,60 +69,66 @@ const CreateEventScreen = () => {
     createEventWithImages,
     fetchAllEvents,
   } = eventContext;
-  
-  console.log('[CreateEventScreen] Categories:', categories ? `Array(${categories.length})` : 'undefined');
-  console.log('[CreateEventScreen] Amenities:', amenities ? `Array(${amenities.length})` : 'undefined');
-  const [title, setTitle] = useState('');
-  const [address, setAddress] = useState('');
+
+  console.log(
+    "[CreateEventScreen] Categories:",
+    categories ? `Array(${categories.length})` : "undefined",
+  );
+  console.log(
+    "[CreateEventScreen] Amenities:",
+    amenities ? `Array(${amenities.length})` : "undefined",
+  );
+  const [title, setTitle] = useState("");
+  const [address, setAddress] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startTime, setStartTime] = useState(getNextClosest30Minutes());
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [autoApproval, setAutoApproval] = useState(true);
-  const [price, setPrice] = useState('');
-  const [description, setDescription] = useState('');
-  const [newAmenity, setNewAmenity] = useState('');
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [newAmenity, setNewAmenity] = useState("");
   const [restrictionsExpanded, setRestrictionsExpanded] = useState(true);
-  const [maxParticipants, setMaxParticipants] = useState('');
-  const [minAge, setMinAge] = useState('');
+  const [maxParticipants, setMaxParticipants] = useState("");
+  const [minAge, setMinAge] = useState("");
   const [images, setImages] = useState([]);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [errors, setErrors] = useState({
-    title: '',
-    address: '',
-    categories: '',
-    price: '',
-    maxParticipants: '',
-    minAge: '',
-    description: '',
-    images: '',
+    title: "",
+    address: "",
+    categories: "",
+    price: "",
+    maxParticipants: "",
+    minAge: "",
+    description: "",
+    images: "",
   });
-  const [dateError, setDateError] = useState('');
-  const [timeError, setTimeError] = useState('');
+  const [dateError, setDateError] = useState("");
+  const [timeError, setTimeError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [area, setArea] = useState('');
-  const [city, setCity] = useState('');
+  const [area, setArea] = useState("");
+  const [city, setCity] = useState("");
 
-  const isDarkTheme = colorScheme === 'dark';
-  const backgroundColor = isDarkTheme ? '#121212' : '#fff';
-  const textColor = isDarkTheme ? '#fff' : '#000';
-  const defaultBorderColor = isDarkTheme ? '#333' : '#ccc';
-  const borderColor = isDarkTheme ? '#333' : '#ccc';
+  const isDarkTheme = colorScheme === "dark";
+  const backgroundColor = isDarkTheme ? "#121212" : "#fff";
+  const textColor = isDarkTheme ? "#fff" : "#000";
+  const defaultBorderColor = isDarkTheme ? "#333" : "#ccc";
+  const borderColor = isDarkTheme ? "#333" : "#ccc";
 
-  const validateDate = selectedDate => {
+  const validateDate = (selectedDate) => {
     const currentDate = new Date();
     if (selectedDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
-      setDateError('Date cannot be in the past');
+      setDateError("Date cannot be in the past");
       return false;
     }
-    setDateError('');
+    setDateError("");
     return true;
   };
 
-  const validateTime = selectedTime => {
+  const validateTime = (selectedTime) => {
     const currentDateTime = new Date();
     const selectedDate = new Date(date);
     selectedDate.setHours(0, 0, 0, 0);
@@ -134,11 +140,11 @@ const CreateEventScreen = () => {
       selectedDate.getTime() === currentDateOnly.getTime() &&
       selectedTime.getTime() <= currentDateTime.getTime()
     ) {
-      setTimeError('Time cannot be in the past');
+      setTimeError("Time cannot be in the past");
       return false;
     }
 
-    setTimeError('');
+    setTimeError("");
     return true;
   };
 
@@ -146,15 +152,19 @@ const CreateEventScreen = () => {
 
   useEffect(() => {
     try {
-      console.log('[CreateEventScreen] useEffect - Setting fetchRequired to true');
+      console.log(
+        "[CreateEventScreen] useEffect - Setting fetchRequired to true",
+      );
       setFetchRequired(true);
 
       return () => {
-        console.log('[CreateEventScreen] useEffect cleanup - Setting fetchRequired to false');
+        console.log(
+          "[CreateEventScreen] useEffect cleanup - Setting fetchRequired to false",
+        );
         setFetchRequired(false);
       };
     } catch (error) {
-      console.error('[CreateEventScreen] Error in useEffect:', error);
+      console.error("[CreateEventScreen] Error in useEffect:", error);
     }
   }, [setFetchRequired]);
 
@@ -175,12 +185,14 @@ const CreateEventScreen = () => {
     }
   };
 
-  const toggleCategory = categoryId => {
+  const toggleCategory = (categoryId) => {
     if (!categories || !Array.isArray(categories)) return;
-    
-    const currentSelectedCount = categories.filter(cat => cat.selected).length;
 
-    const updatedCategories = categories.map(cat => {
+    const currentSelectedCount = categories.filter(
+      (cat) => cat.selected,
+    ).length;
+
+    const updatedCategories = categories.map((cat) => {
       if (cat.id === categoryId) {
         if (!cat.selected && currentSelectedCount < 3) {
           return { ...cat, selected: true };
@@ -193,50 +205,52 @@ const CreateEventScreen = () => {
 
     setCategories(updatedCategories);
 
-    const isCategorySelected = updatedCategories.some(cat => cat.selected);
+    const isCategorySelected = updatedCategories.some((cat) => cat.selected);
     if (isCategorySelected) {
-      setErrors(prevErrors => {
+      setErrors((prevErrors) => {
         const { categories, ...rest } = prevErrors;
         return rest;
       });
     } else {
-      setErrors(prevErrors => ({
+      setErrors((prevErrors) => ({
         ...prevErrors,
-        categories: 'At least 1 category must be selected',
+        categories: "At least 1 category must be selected",
       }));
     }
   };
 
-  const handleSetImages = newImages => {
+  const handleSetImages = (newImages) => {
     setImages(newImages);
 
     // Revalidate the images dynamically
     if (newImages.length > 0) {
-      setErrors(prevErrors => {
+      setErrors((prevErrors) => {
         const { images, ...rest } = prevErrors;
         return rest;
       });
     } else {
-      setErrors(prevErrors => ({
+      setErrors((prevErrors) => ({
         ...prevErrors,
-        images: 'At least 1 image is required',
+        images: "At least 1 image is required",
       }));
     }
   };
 
-  const toggleAmenity = id => {
+  const toggleAmenity = (id) => {
     if (!amenities || !Array.isArray(amenities)) return;
-    
-    setAmenities(prev =>
-      prev.map(amenity =>
-        amenity.id === id ? { ...amenity, selected: !amenity.selected } : amenity,
+
+    setAmenities((prev) =>
+      prev.map((amenity) =>
+        amenity.id === id
+          ? { ...amenity, selected: !amenity.selected }
+          : amenity,
       ),
     );
   };
 
   const addAmenity = () => {
     if (!amenities || !Array.isArray(amenities)) return;
-    
+
     if (newAmenity.trim()) {
       const newAmenityItem = {
         id: amenities.length + 1,
@@ -244,62 +258,65 @@ const CreateEventScreen = () => {
         selected: true,
       };
       setAmenities([...amenities, newAmenityItem]);
-      setNewAmenity('');
+      setNewAmenity("");
     }
   };
 
-  const incrementValue = setter => () =>
-    setter(prev => String(Number(prev || 0) + 1));
-  const decrementValue = setter => () =>
-    setter(prev => String(Math.max(Number(prev || 0) - 1, 0)));
+  const incrementValue = (setter) => () =>
+    setter((prev) => String(Number(prev || 0) + 1));
+  const decrementValue = (setter) => () =>
+    setter((prev) => String(Math.max(Number(prev || 0) - 1, 0)));
 
   const validateInputs = () => {
     const newErrors = { ...errors };
     if (!title.trim()) {
-      newErrors.title = 'Required';
+      newErrors.title = "Required";
     } else {
       delete newErrors.title;
     }
 
     if (!description.trim()) {
-      newErrors.description = 'Required';
+      newErrors.description = "Required";
     } else {
       delete newErrors.description;
     }
 
     if (!address.trim()) {
-      newErrors.address = 'Required';
+      newErrors.address = "Required";
     } else {
       delete newErrors.address;
     }
 
     if (!price.trim()) {
-      newErrors.price = 'Required';
+      newErrors.price = "Required";
     } else {
       delete newErrors.price;
     }
 
     if (!maxParticipants.trim()) {
-      newErrors.maxParticipants = 'Required';
+      newErrors.maxParticipants = "Required";
     } else {
       delete newErrors.maxParticipants;
     }
 
     if (!minAge.trim()) {
-      newErrors.minAge = 'Required';
+      newErrors.minAge = "Required";
     } else {
       delete newErrors.minAge;
     }
 
-    const isCategorySelected = categories && Array.isArray(categories) && categories.some(cat => cat.selected);
+    const isCategorySelected =
+      categories &&
+      Array.isArray(categories) &&
+      categories.some((cat) => cat.selected);
     if (!isCategorySelected) {
-      newErrors.categories = 'At least 1 category must be selected';
+      newErrors.categories = "At least 1 category must be selected";
     } else {
       delete newErrors.categories;
     }
 
     if (images.length === 0) {
-      newErrors.images = 'At least 1 image is required';
+      newErrors.images = "At least 1 image is required";
     } else {
       delete newErrors.images;
     }
@@ -308,13 +325,13 @@ const CreateEventScreen = () => {
     const isTimeValid = validateTime(new Date(startTime));
 
     if (!isDateValid) {
-      newErrors.date = 'Date cannot be in the past';
+      newErrors.date = "Date cannot be in the past";
     } else {
       delete newErrors.date;
     }
 
     if (!isTimeValid) {
-      newErrors.time = 'Time cannot be in the past';
+      newErrors.time = "Time cannot be in the past";
     } else {
       delete newErrors.time;
     }
@@ -343,7 +360,7 @@ const CreateEventScreen = () => {
           address,
           description,
           datetime: datetimeUTC.toISOString(),
-          banner_img: '',
+          banner_img: "",
           number_of_attendees: Number(maxParticipants),
           meta: {
             area: area,
@@ -355,18 +372,24 @@ const CreateEventScreen = () => {
             },
           },
           location: city,
-          categories: categories && Array.isArray(categories) ? categories.filter(cat => cat.selected).map(cat => cat.id) : [],
-          amenities: amenities && Array.isArray(amenities)
-            ? amenities.filter(amenity => amenity.selected).map(amenity => amenity.id)
-            : [],
+          categories:
+            categories && Array.isArray(categories)
+              ? categories.filter((cat) => cat.selected).map((cat) => cat.id)
+              : [],
+          amenities:
+            amenities && Array.isArray(amenities)
+              ? amenities
+                  .filter((amenity) => amenity.selected)
+                  .map((amenity) => amenity.id)
+              : [],
         };
 
         const response = await createEventWithImages(eventDetails, images);
-        console.log('Event created successfully:', response);
+        console.log("Event created successfully:", response);
         fetchAllEvents();
         router.back();
       } catch (error) {
-        console.error('Error creating event:', error);
+        console.error("Error creating event:", error);
       } finally {
         setIsLoading(false); // Hide loader
       }
@@ -374,11 +397,16 @@ const CreateEventScreen = () => {
   };
 
   const isFormDirty = () => {
-    if (!categories || !Array.isArray(categories) || !amenities || !Array.isArray(amenities)) {
+    if (
+      !categories ||
+      !Array.isArray(categories) ||
+      !amenities ||
+      !Array.isArray(amenities)
+    ) {
       return false;
     }
-    
-    const initialCategories = categories.map(cat => ({
+
+    const initialCategories = categories.map((cat) => ({
       id: cat.id,
       selected: cat.selected,
     }));
@@ -386,7 +414,7 @@ const CreateEventScreen = () => {
       (cat, index) => cat.selected !== initialCategories[index].selected,
     );
 
-    const initialAmenities = amenities.map(cat => ({
+    const initialAmenities = amenities.map((cat) => ({
       id: cat.id,
       selected: cat.selected,
     }));
@@ -394,16 +422,16 @@ const CreateEventScreen = () => {
       (cat, index) => cat.selected !== initialAmenities[index].selected,
     );
     return (
-      title !== '' ||
-      address !== '' ||
+      title !== "" ||
+      address !== "" ||
       categoryChanged ||
       autoApproval !== true ||
-      price !== '' ||
-      description !== '' ||
-      newAmenity !== '' ||
+      price !== "" ||
+      description !== "" ||
+      newAmenity !== "" ||
       restrictionsExpanded !== true ||
-      maxParticipants !== '' ||
-      minAge !== '' ||
+      maxParticipants !== "" ||
+      minAge !== "" ||
       amenitiesChanged ||
       images.length > 0
     );
@@ -419,26 +447,29 @@ const CreateEventScreen = () => {
   }, [isFormDirty]);
 
   const handleDiscardChanges = () => {
-    setTitle('');
-    setAddress('');
+    setTitle("");
+    setAddress("");
     setDate(new Date());
     setStartTime(getNextClosest30Minutes());
     setAutoApproval(true);
-    setPrice('');
-    setDescription('');
-    setNewAmenity('');
+    setPrice("");
+    setDescription("");
+    setNewAmenity("");
     setRestrictionsExpanded(true);
-    setMaxParticipants('');
-    setMinAge('');
+    setMaxParticipants("");
+    setMinAge("");
     setImages([]);
 
     if (categories && Array.isArray(categories)) {
-      const resetCategories = categories.map(cat => ({ ...cat, selected: false }));
+      const resetCategories = categories.map((cat) => ({
+        ...cat,
+        selected: false,
+      }));
       setCategories(resetCategories);
     }
 
     if (amenities && Array.isArray(amenities)) {
-      const resetAmenities = amenities.map(amenity => ({
+      const resetAmenities = amenities.map((amenity) => ({
         ...amenity,
         selected: false,
       }));
@@ -461,7 +492,7 @@ const CreateEventScreen = () => {
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       handleGoBack,
     );
     return () => backHandler.remove();
@@ -474,24 +505,30 @@ const CreateEventScreen = () => {
         <View
           style={[
             styles.header,
-            { borderBottomColor: isDarkTheme ? '#333' : '#ddd' },
-          ]}>
+            { borderBottomColor: isDarkTheme ? "#333" : "#ddd" },
+          ]}
+        >
           <TouchableOpacity onPress={handleGoBack}>
-            <Ionicons name={'chevron-back'} size={20} color={primaryColor.main} />
+            <Ionicons
+              name={"chevron-back"}
+              size={20}
+              color={primaryColor.main}
+            />
           </TouchableOpacity>
           <View
             style={{
               flex: 3,
-              alignItems: 'center',
-              flexDirection: 'row',
-              justifyContent: 'center',
-            }}>
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
             {/* Center section */}
             <Text style={[styles.headerTitle, { color: textColor }]}>
               Create Event
             </Text>
             <MaterialCommunityIcons
-              name={'party-popper'}
+              name={"party-popper"}
               size={20}
               style={{ marginLeft: 10 }}
               color={primaryColor.main}
@@ -509,23 +546,26 @@ const CreateEventScreen = () => {
           <ScrollView
             contentContainerStyle={styles.content}
             nestedScrollEnabled={true}
-            keyboardShouldPersistTaps="handled">
+            keyboardShouldPersistTaps="handled"
+          >
             {/* Title */}
-            <Text style={[styles.label, { color: textColor }]}>Title of Event</Text>
+            <Text style={[styles.label, { color: textColor }]}>
+              Title of Event
+            </Text>
             <TextInput
               style={[
                 styles.input,
                 {
-                  borderColor: errors.title ? 'red' : defaultBorderColor,
+                  borderColor: errors.title ? "red" : defaultBorderColor,
                   color: textColor,
                 },
               ]}
               placeholder="Enter title"
-              placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+              placeholderTextColor={isDarkTheme ? "#aaa" : "#666"}
               value={title}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 setTitle(text);
-                if (errors.title) setErrors({ ...errors, title: '' });
+                if (errors.title) setErrors({ ...errors, title: "" });
               }}
             />
             {errors.title ? (
@@ -566,34 +606,38 @@ const CreateEventScreen = () => {
 
             <View style={styles.chipContainer}>
               {showAllCategories ? (
-                categories && Array.isArray(categories) ? categories.map(cat => (
-                  <TouchableOpacity
-                    key={cat.id}
-                    style={[
-                      styles.chip,
-                      {
-                        backgroundColor: cat.selected
-                          ? primaryColor.main
-                          : isDarkTheme
-                            ? '#333'
-                            : '#ddd',
-                      },
-                    ]}
-                    onPress={() => toggleCategory(cat.id)}>
-                    <Text
-                      style={{
-                        color: cat.selected ? '#fff' : textColor,
-                        fontWeight: 'bold',
-                      }}>
-                      {cat.label}
-                    </Text>
-                  </TouchableOpacity>
-                )) : null
+                categories && Array.isArray(categories) ? (
+                  categories.map((cat) => (
+                    <TouchableOpacity
+                      key={cat.id}
+                      style={[
+                        styles.chip,
+                        {
+                          backgroundColor: cat.selected
+                            ? primaryColor.main
+                            : isDarkTheme
+                              ? "#333"
+                              : "#ddd",
+                        },
+                      ]}
+                      onPress={() => toggleCategory(cat.id)}
+                    >
+                      <Text
+                        style={{
+                          color: cat.selected ? "#fff" : textColor,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {cat.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))
+                ) : null
               ) : loading ? (
                 // <SkeletonCategoryLoader theme={colorScheme} />
                 <></>
-              ) : (
-                categories && Array.isArray(categories) ? categories.slice(0, 10).map(cat => (
+              ) : categories && Array.isArray(categories) ? (
+                categories.slice(0, 10).map((cat) => (
                   <TouchableOpacity
                     key={cat.id}
                     style={[
@@ -602,34 +646,42 @@ const CreateEventScreen = () => {
                         backgroundColor: cat.selected
                           ? primaryColor.main
                           : isDarkTheme
-                            ? '#333'
-                            : '#ddd',
+                            ? "#333"
+                            : "#ddd",
                       },
                     ]}
-                    onPress={() => toggleCategory(cat.id)}>
+                    onPress={() => toggleCategory(cat.id)}
+                  >
                     <Text
                       style={{
-                        color: cat.selected ? '#fff' : textColor,
-                        fontWeight: 'bold',
-                      }}>
+                        color: cat.selected ? "#fff" : textColor,
+                        fontWeight: "bold",
+                      }}
+                    >
                       {cat.label}
                     </Text>
                   </TouchableOpacity>
-                )) : null
-              )}
+                ))
+              ) : null}
               {!loading && (
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
                     marginTop: 10,
                     marginLeft: 10,
-                  }}>
+                  }}
+                >
                   <TouchableOpacity
-                    onPress={() => setShowAllCategories(prev => !prev)}>
+                    onPress={() => setShowAllCategories((prev) => !prev)}
+                  >
                     <Text
-                      style={[styles.createButton, { color: primaryColor.main }]}>
-                      {showAllCategories ? 'Show Less' : 'Show More'}
+                      style={[
+                        styles.createButton,
+                        { color: primaryColor.main },
+                      ]}
+                    >
+                      {showAllCategories ? "Show Less" : "Show More"}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -646,8 +698,9 @@ const CreateEventScreen = () => {
                 onPress={() => setShowDatePicker(true)}
                 style={[
                   styles.inputRow,
-                  { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
-                ]}>
+                  { backgroundColor: isDarkTheme ? "#333" : "#ddd" },
+                ]}
+              >
                 <Ionicons
                   name="calendar-outline"
                   style={{ marginRight: 5 }}
@@ -655,15 +708,14 @@ const CreateEventScreen = () => {
                   color={textColor}
                 />
                 <Text style={{ color: textColor }}>
-                  {date ? date.toDateString() : 'Select Date'}
+                  {date ? date.toDateString() : "Select Date"}
                 </Text>
               </TouchableOpacity>
-              <DatePicker
-                modal
-                open={showDatePicker}
-                date={date}
+              <DateTimePickerModal
+                isVisible={showDatePicker}
                 mode="date"
-                onConfirm={selectedDate => {
+                date={date}
+                onConfirm={(selectedDate) => {
                   setShowDatePicker(false);
                   if (validateDate(selectedDate)) {
                     const combinedDateTime = combineDateAndTime(
@@ -682,13 +734,16 @@ const CreateEventScreen = () => {
 
             {/* Start Time */}
             <View style={styles.row}>
-              <Text style={[styles.label, { color: textColor }]}>Start Time</Text>
+              <Text style={[styles.label, { color: textColor }]}>
+                Start Time
+              </Text>
               <TouchableOpacity
                 onPress={() => setShowTimePicker(true)}
                 style={[
                   styles.inputRow,
-                  { backgroundColor: isDarkTheme ? '#333' : '#ddd' },
-                ]}>
+                  { backgroundColor: isDarkTheme ? "#333" : "#ddd" },
+                ]}
+              >
                 <Ionicons
                   name="time-outline"
                   style={{ marginRight: 5 }}
@@ -698,18 +753,17 @@ const CreateEventScreen = () => {
                 <Text style={{ color: textColor }}>
                   {startTime
                     ? startTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                    : 'Select Start Time'}
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "Select Start Time"}
                 </Text>
               </TouchableOpacity>
-              <DatePicker
-                modal
-                open={showTimePicker}
-                date={startTime}
+              <DateTimePickerModal
+                isVisible={showTimePicker}
                 mode="time"
-                onConfirm={selectedTime => {
+                date={startTime}
+                onConfirm={(selectedTime) => {
                   setShowTimePicker(false);
                   if (validateTime(selectedTime)) {
                     const combinedDateTime = combineDateAndTime(
@@ -727,14 +781,14 @@ const CreateEventScreen = () => {
             ) : null}
 
             {/* Auto Approval */}
-            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+            <View style={[styles.row, { justifyContent: "space-between" }]}>
               <Text style={[styles.label, { color: textColor }]}>
                 Invitation Only
               </Text>
               <Switch
                 value={autoApproval}
                 onValueChange={setAutoApproval}
-                trackColor={{ false: '#ccc', true: primaryColor.main }}
+                trackColor={{ false: "#ccc", true: primaryColor.main }}
               />
             </View>
 
@@ -746,18 +800,19 @@ const CreateEventScreen = () => {
               <View
                 style={[
                   styles.inputRowPrice,
-                  { borderColor: errors.price ? 'red' : defaultBorderColor },
-                ]}>
+                  { borderColor: errors.price ? "red" : defaultBorderColor },
+                ]}
+              >
                 <Text style={{ color: textColor, marginRight: 5 }}>₹</Text>
                 <TextInput
                   style={{ flex: 1, color: textColor }}
                   placeholder="Enter price"
-                  placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+                  placeholderTextColor={isDarkTheme ? "#aaa" : "#666"}
                   keyboardType="numeric"
                   value={price}
-                  onChangeText={text => {
+                  onChangeText={(text) => {
                     setPrice(text);
-                    if (errors.price) setErrors({ ...errors, price: '' });
+                    if (errors.price) setErrors({ ...errors, price: "" });
                   }}
                 />
               </View>
@@ -768,10 +823,13 @@ const CreateEventScreen = () => {
 
             <TouchableOpacity
               style={[styles.restrictionToggle, { borderColor }]}
-              onPress={toggleRestrictions}>
-              <Text style={[styles.label, { color: textColor }]}>Restrictions</Text>
+              onPress={toggleRestrictions}
+            >
+              <Text style={[styles.label, { color: textColor }]}>
+                Restrictions
+              </Text>
               <Ionicons
-                name={restrictionsExpanded ? 'chevron-down' : 'chevron-forward'}
+                name={restrictionsExpanded ? "chevron-down" : "chevron-forward"}
                 size={20}
                 color={textColor}
               />
@@ -781,8 +839,9 @@ const CreateEventScreen = () => {
             <Animated.View
               style={[
                 styles.restrictionContent,
-                { height: restrictionsExpanded ? null : 0, overflow: 'hidden' },
-              ]}>
+                { height: restrictionsExpanded ? null : 0, overflow: "hidden" },
+              ]}
+            >
               {restrictionsExpanded && (
                 <>
                   {/* Max Participants */}
@@ -793,7 +852,8 @@ const CreateEventScreen = () => {
                     <View style={styles.counterContainer}>
                       <TouchableOpacity
                         onPress={decrementValue(setMaxParticipants)}
-                        style={styles.counterButton}>
+                        style={styles.counterButton}
+                      >
                         <Ionicons
                           name="remove-circle-outline"
                           size={20}
@@ -805,7 +865,7 @@ const CreateEventScreen = () => {
                           styles.counterInput,
                           {
                             borderColor: errors.maxParticipants
-                              ? 'red'
+                              ? "red"
                               : defaultBorderColor,
                             color: textColor,
                           },
@@ -816,7 +876,8 @@ const CreateEventScreen = () => {
                       />
                       <TouchableOpacity
                         onPress={incrementValue(setMaxParticipants)}
-                        style={styles.counterButton}>
+                        style={styles.counterButton}
+                      >
                         <Ionicons
                           name="add-circle-outline"
                           size={20}
@@ -839,7 +900,8 @@ const CreateEventScreen = () => {
                     <View style={styles.counterContainer}>
                       <TouchableOpacity
                         onPress={decrementValue(setMinAge)}
-                        style={styles.counterButton}>
+                        style={styles.counterButton}
+                      >
                         <Ionicons
                           name="remove-circle-outline"
                           size={20}
@@ -851,7 +913,7 @@ const CreateEventScreen = () => {
                           styles.counterInput,
                           {
                             borderColor: errors.minAge
-                              ? 'red'
+                              ? "red"
                               : defaultBorderColor,
                             color: textColor,
                           },
@@ -862,7 +924,8 @@ const CreateEventScreen = () => {
                       />
                       <TouchableOpacity
                         onPress={incrementValue(setMinAge)}
-                        style={styles.counterButton}>
+                        style={styles.counterButton}
+                      >
                         <Ionicons
                           name="add-circle-outline"
                           size={20}
@@ -879,22 +942,25 @@ const CreateEventScreen = () => {
             </Animated.View>
 
             {/* Description */}
-            <Text style={[styles.label, { color: textColor }]}>Description</Text>
+            <Text style={[styles.label, { color: textColor }]}>
+              Description
+            </Text>
             <TextInput
               style={[
                 styles.input,
                 {
                   height: 100,
-                  borderColor: errors.description ? 'red' : defaultBorderColor,
-                  textAlignVertical: 'top',
+                  borderColor: errors.description ? "red" : defaultBorderColor,
+                  textAlignVertical: "top",
                 },
               ]}
               placeholder="Enter description"
-              placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+              placeholderTextColor={isDarkTheme ? "#aaa" : "#666"}
               value={description}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 setDescription(text);
-                if (errors.description) setErrors({ ...errors, description: '' });
+                if (errors.description)
+                  setErrors({ ...errors, description: "" });
               }}
               multiline
             />
@@ -910,13 +976,16 @@ const CreateEventScreen = () => {
             {showAllAmenities ? (
               <FlatList
                 data={amenities && Array.isArray(amenities) ? amenities : []}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.checkboxContainer}
-                    onPress={() => toggleAmenity(item.id)}>
+                    onPress={() => toggleAmenity(item.id)}
+                  >
                     <Ionicons
-                      name={item.selected ? 'checkbox-outline' : 'square-outline'}
+                      name={
+                        item.selected ? "checkbox-outline" : "square-outline"
+                      }
                       size={20}
                       color={textColor}
                     />
@@ -928,14 +997,21 @@ const CreateEventScreen = () => {
               />
             ) : (
               <FlatList
-                data={amenities && Array.isArray(amenities) ? amenities.slice(0, 10) : []} // Show only the first 10 items
-                keyExtractor={item => item.id.toString()}
+                data={
+                  amenities && Array.isArray(amenities)
+                    ? amenities.slice(0, 10)
+                    : []
+                } // Show only the first 10 items
+                keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.checkboxContainer}
-                    onPress={() => toggleAmenity(item.id)}>
+                    onPress={() => toggleAmenity(item.id)}
+                  >
                     <Ionicons
-                      name={item.selected ? 'checkbox-outline' : 'square-outline'}
+                      name={
+                        item.selected ? "checkbox-outline" : "square-outline"
+                      }
                       size={20}
                       color={textColor}
                     />
@@ -952,13 +1028,11 @@ const CreateEventScreen = () => {
                 <TextInput
                   style={[styles.input, { borderColor, color: textColor }]}
                   placeholder="Add a new amenity"
-                  placeholderTextColor={isDarkTheme ? '#aaa' : '#666'}
+                  placeholderTextColor={isDarkTheme ? "#aaa" : "#666"}
                   value={newAmenity}
                   onChangeText={setNewAmenity}
                 />
-                <TouchableOpacity
-                  onPress={addAmenity}
-                  style={styles.addButton}>
+                <TouchableOpacity onPress={addAmenity} style={styles.addButton}>
                   <Ionicons
                     name="add-circle-outline"
                     size={30}
@@ -970,9 +1044,10 @@ const CreateEventScreen = () => {
 
             <TouchableOpacity
               style={{ marginBottom: 10 }}
-              onPress={() => setShowAllAmenities(prev => !prev)}>
+              onPress={() => setShowAllAmenities((prev) => !prev)}
+            >
               <Text style={[styles.createButton, { color: primaryColor.main }]}>
-                {showAllAmenities ? 'Show Less' : 'Show More'}
+                {showAllAmenities ? "Show Less" : "Show More"}
               </Text>
             </TouchableOpacity>
 
@@ -999,8 +1074,9 @@ const CreateEventScreen = () => {
             <View
               style={[
                 styles.footerContainer,
-                { backgroundColor: isDarkTheme ? '#333' : '#f5f5f5' },
-              ]}>
+                { backgroundColor: isDarkTheme ? "#333" : "#f5f5f5" },
+              ]}
+            >
               <Text style={[styles.title, { color: textColor }]}>
                 PLEASE READ BEFORE CREATING AN EVENT:
               </Text>
@@ -1026,8 +1102,9 @@ const CreateEventScreen = () => {
         <View
           style={[
             styles.footer,
-            { backgroundColor, borderTopColor: isDarkTheme ? '#333' : '#ddd' },
-          ]}>
+            { backgroundColor, borderTopColor: isDarkTheme ? "#333" : "#ddd" },
+          ]}
+        >
           {isLoading ? (
             <ActivityIndicator
               style={styles.footerLoadingButton}
@@ -1037,13 +1114,14 @@ const CreateEventScreen = () => {
           ) : (
             <TouchableOpacity
               style={styles.footerCreateButton}
-              onPress={handleCreateEvent}>
+              onPress={handleCreateEvent}
+            >
               <Text style={[styles.createButtonText]}>Publish</Text>
             </TouchableOpacity>
           )}
         </View>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
@@ -1052,35 +1130,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   footer: {
     padding: 10,
     borderTopWidth: 1,
-    width: '100%',
-    position: 'absolute',
+    width: "100%",
+    position: "absolute",
     bottom: 0,
   },
   footerLoadingButton: {
     height: 40,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: primaryColor.main,
-    shadowColor: '#7373FF',
+    shadowColor: "#7373FF",
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -1089,40 +1167,40 @@ const styles = StyleSheet.create({
   footerCreateButton: {
     height: 40,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: primaryColor.main,
-    shadowColor: '#7373FF',
+    shadowColor: "#7373FF",
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
   },
   createButtonText: {
-    color: '#fff',
+    color: "#fff",
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderRadius: 4,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   createButton: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   addressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
   },
   dateTimeErrorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginBottom: 10,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginBottom: 10,
   },
@@ -1134,7 +1212,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginVertical: 8,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   informationText: {
     fontSize: 12,
@@ -1147,16 +1225,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   inputRowPrice: {
     flex: 1,
     maxWidth: 150,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderRadius: 4,
     paddingHorizontal: 12,
@@ -1165,16 +1243,16 @@ const styles = StyleSheet.create({
   inputRow: {
     flex: 1,
     maxWidth: 150,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: 4,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginLeft: 20,
   },
   chipContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 16,
   },
   chip: {
@@ -1184,35 +1262,35 @@ const styles = StyleSheet.create({
     margin: 4,
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   newAmenityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   addButton: {
-    marginBottom: '5%',
+    marginBottom: "5%",
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
   restrictionToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   restrictionContent: {
-    overflow: 'hidden',
+    overflow: "hidden",
     paddingHorizontal: 16,
   },
   restrictionRow: {
     marginVertical: 8,
   },
   counterContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   counterButton: {
     marginHorizontal: 8,
@@ -1220,7 +1298,7 @@ const styles = StyleSheet.create({
   counterInput: {
     borderWidth: 1,
     borderRadius: 4,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 8,
     width: 50,
   },
@@ -1231,7 +1309,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   pointsContainer: {
